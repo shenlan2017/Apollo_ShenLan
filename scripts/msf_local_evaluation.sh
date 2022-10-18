@@ -22,7 +22,7 @@ GNSS_LOC_TOPIC="/apollo/localization/msf_gnss"
 LIDAR_LOC_TOPIC="/apollo/localization/msf_lidar"
 FUSION_LOC_TOPIC="/apollo/localization/pose"
 ODOMETRY_LOC_TOPIC="/apollo/sensor/gnss/odometry"
-CLOUD_TOPIC="/apollo/sensor/velodyne64/compensator/PointCloud2"
+CLOUD_TOPIC="/apollo/sensor/lidar128/compensator/PointCloud2"
 
 GNSS_LOC_FILE="gnss_loc.txt"
 LIDAR_LOC_FILE="lidar_loc.txt"
@@ -98,9 +98,9 @@ echo ""
 echo "Fusion localization result:"
 python ${APOLLO_ROOT_DIR}/modules/tools/localization/evaluate_compare.py compare_fusion_odometry_all.txt
 
-echo ""
-echo "Lidar localization result:"
-python ${APOLLO_ROOT_DIR}/modules/tools/localization/evaluate_compare.py compare_lidar_odometry_all.txt
+# echo ""
+# echo "Lidar localization result:"
+# python ${APOLLO_ROOT_DIR}/modules/tools/localization/evaluate_compare.py compare_lidar_odometry_all.txt
 
 if [ $# -eq 2 ]; then
   echo ""
