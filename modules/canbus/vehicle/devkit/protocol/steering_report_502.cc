@@ -33,7 +33,7 @@ void Steeringreport502::Parse(const std::uint8_t* bytes, int32_t length,
                               ChassisDetail* chassis) const {
   chassis->mutable_devkit()
       ->mutable_steering_report_502()
-      ->set_steer_angle_rear_actual(steer_angle_rear_actual(bytes, length));
+      ->set_steer_angle_rear_actual(steer_angle_rear_actual(bytes, length));  
   chassis->mutable_devkit()
       ->mutable_steering_report_502()
       ->set_steer_angle_spd_actual(steer_angle_spd_actual(bytes, length));

@@ -25,6 +25,9 @@
 
 #include "modules/canbus/vehicle/devkit/protocol/bms_report_512.h"
 #include "modules/canbus/vehicle/devkit/protocol/brake_report_501.h"
+// #include "modules/canbus/vehicle/devkit/protocol/chassiserrorcode_1_201.h"
+// #include "modules/canbus/vehicle/devkit/protocol/chassiserrorcode_200.h"
+// #include "modules/canbus/vehicle/devkit/protocol/chassiserrorcode_2_202.h"
 #include "modules/canbus/vehicle/devkit/protocol/gear_report_503.h"
 #include "modules/canbus/vehicle/devkit/protocol/park_report_504.h"
 #include "modules/canbus/vehicle/devkit/protocol/steering_report_502.h"
@@ -46,16 +49,19 @@ namespace devkit {
 
 DevkitMessageManager::DevkitMessageManager() {
   // Control Messages
-  AddSendProtocolData<Brakecommand101, true>();
-  AddSendProtocolData<Gearcommand103, true>();
-  AddSendProtocolData<Parkcommand104, true>();
-  AddSendProtocolData<Steeringcommand102, true>();
-  AddSendProtocolData<Throttlecommand100, true>();
-  AddSendProtocolData<Vehiclemodecommand105, true>();
+  AddSendProtocolData<Brakecommand101, false>();
+  AddSendProtocolData<Gearcommand103, false>();
+  AddSendProtocolData<Parkcommand104, false>();
+  AddSendProtocolData<Steeringcommand102, false>();
+  AddSendProtocolData<Throttlecommand100, false>();
+  AddSendProtocolData<Vehiclemodecommand105, false>();
 
   // Report Messages
   AddRecvProtocolData<Bmsreport512, true>();
   AddRecvProtocolData<Brakereport501, true>();
+  // AddRecvProtocolData<Chassiserrorcode1201, true>();
+  // AddRecvProtocolData<Chassiserrorcode200, true>();
+  // AddRecvProtocolData<Chassiserrorcode2202, true>();
   AddRecvProtocolData<Gearreport503, true>();
   AddRecvProtocolData<Parkreport504, true>();
   AddRecvProtocolData<Steeringreport502, true>();

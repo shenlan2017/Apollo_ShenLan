@@ -381,8 +381,6 @@ Chassis LincolnController::chassis() {
   return chassis_;
 }
 
-bool LincolnController::VerifyID() { return true; }
-
 void LincolnController::Emergency() {
   set_driving_mode(Chassis::EMERGENCY_MODE);
   ResetProtocol();

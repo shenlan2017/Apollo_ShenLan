@@ -8,16 +8,16 @@ message Throttle_command_100 {
     THROTTLE_EN_CTRL_DISABLE = 0;
     THROTTLE_EN_CTRL_ENABLE = 1;
   }
-  // [m/s^2] [0|10]
-  optional double throttle_acc = 1;
-  // [] [0|255]
-  optional int32 checksum_100 = 2;
-  // [%] [0|100]
-  optional double throttle_pedal_target = 3;
-  // [] [0|1]
-  optional Throttle_en_ctrlType throttle_en_ctrl = 4;
   // [m/s] [0|10.23]
-  optional double speed_target = 5;
+  optional double speed_target = 1;
+  // [m/s^2] [0|10]
+  optional double throttle_acc = 2;
+  // [] [0|255]
+  optional int32 checksum_100 = 3;
+  // [%] [0|100]
+  optional double throttle_pedal_target = 4;
+  // [] [0|1]
+  optional Throttle_en_ctrlType throttle_en_ctrl = 5;
 }
 
 message Brake_command_101 {
@@ -30,16 +30,16 @@ message Brake_command_101 {
     BRAKE_EN_CTRL_DISABLE = 0;
     BRAKE_EN_CTRL_ENABLE = 1;
   }
-  // [m/s^2] [0|10]
-  optional double brake_dec = 1;
-  // [] [0|255]
-  optional int32 checksum_101 = 2;
-  // [%] [0|100]
-  optional double brake_pedal_target = 3;
-  // [] [0|1]
-  optional Brake_en_ctrlType brake_en_ctrl = 4;
   // [] [0|0]
-  optional Aeb_en_ctrlType aeb_en_ctrl = 5;
+  optional Aeb_en_ctrlType aeb_en_ctrl = 1;
+  // [m/s^2] [0|10]
+  optional double brake_dec = 2;
+  // [] [0|255]
+  optional int32 checksum_101 = 3;
+  // [%] [0|100]
+  optional double brake_pedal_target = 4;
+  // [] [0|1]
+  optional Brake_en_ctrlType brake_en_ctrl = 5;
 }
 
 message Steering_command_102 {
@@ -130,6 +130,205 @@ message Vehicle_mode_command_105 {
   optional Steer_mode_ctrlType steer_mode_ctrl = 5;
 }
 
+message Chassiserrorcode_200 {
+// Report Message
+  enum Bms_communicationfaultType {
+    BMS_COMMUNICATIONFAULT_CONNECTION = 0;
+    BMS_COMMUNICATIONFAULT_DISCONNECTION = 1;
+  }
+  enum ChassisrredsfaultType {
+    CHASSISRREDSFAULT_NO_ERROR = 0;
+    CHASSISRREDSFAULT_ERROR = 1;
+  }
+  enum ChassisrfedsfaultType {
+    CHASSISRFEDSFAULT_NO_ERROR = 0;
+    CHASSISRFEDSFAULT_ERROR = 1;
+  }
+  enum ChassislredsfaultType {
+    CHASSISLREDSFAULT_NO_ERROR = 0;
+    CHASSISLREDSFAULT_ERROR = 1;
+  }
+  enum ChassislfedsfaultType {
+    CHASSISLFEDSFAULT_NO_ERROR = 0;
+    CHASSISLFEDSFAULT_ERROR = 1;
+  }
+  enum ChassisfrontepsfaultType {
+    CHASSISFRONTEPSFAULT_NO_ERROR = 0;
+    CHASSISFRONTEPSFAULT_ERROR = 1;
+  }
+  enum ChassisebsfaultType {
+    CHASSISEBSFAULT_NO_ERROR = 0;
+    CHASSISEBSFAULT_ERROR = 1;
+  }
+  enum ChassisbackepsfaultType {
+    CHASSISBACKEPSFAULT_NO_ERROR = 0;
+    CHASSISBACKEPSFAULT_ERROR = 1;
+  }
+  enum LeadacidbatterylowType {
+    LEADACIDBATTERYLOW_NO_ERROR = 0;
+    LEADACIDBATTERYLOW_ERROR = 1;
+  }
+  enum ControlercommunicationfaultType {
+    CONTROLERCOMMUNICATIONFAULT_CONNECTION = 0;
+    CONTROLERCOMMUNICATIONFAULT_DISCONNECTION = 1;
+  }
+  enum Eps_rearcommunicationfaultType {
+    EPS_REARCOMMUNICATIONFAULT_CONNECTION = 0;
+    EPS_REARCOMMUNICATIONFAULT_DISCONNECTION = 1;
+  }
+  enum Eps_frontcommunicationfaultType {
+    EPS_FRONTCOMMUNICATIONFAULT_CONNECTION = 0;
+    EPS_FRONTCOMMUNICATIONFAULT_DISCONNECTION = 1;
+  }
+  enum Eds_rrcommunicationfaultType {
+    EDS_RRCOMMUNICATIONFAULT_CONNECTION = 0;
+    EDS_RRCOMMUNICATIONFAULT_DISCONNECTION = 1;
+  }
+  enum Eds_rfcommunicationfaultType {
+    EDS_RFCOMMUNICATIONFAULT_CONNECTION = 0;
+    EDS_RFCOMMUNICATIONFAULT_DISCONNECTION = 1;
+  }
+  enum Eds_lrcommunicationfaultType {
+    EDS_LRCOMMUNICATIONFAULT_CONNECTION = 0;
+    EDS_LRCOMMUNICATIONFAULT_DISCONNECTION = 1;
+  }
+  enum Eds_lfcommunicationfaultType {
+    EDS_LFCOMMUNICATIONFAULT_CONNECTION = 0;
+    EDS_LFCOMMUNICATIONFAULT_DISCONNECTION = 1;
+  }
+  enum Ebs_communicationfaultType {
+    EBS_COMMUNICATIONFAULT_CONNECTION = 0;
+    EBS_COMMUNICATIONFAULT_DISCONNECTION = 1;
+  }
+  // [] [0|0]
+  optional Bms_communicationfaultType bms_communicationfault = 1;
+  // [] [0|0]
+  optional ChassisrredsfaultType chassisrredsfault = 2;
+  // [] [0|0]
+  optional ChassisrfedsfaultType chassisrfedsfault = 3;
+  // [] [0|0]
+  optional ChassislredsfaultType chassislredsfault = 4;
+  // [] [0|0]
+  optional ChassislfedsfaultType chassislfedsfault = 5;
+  // [] [0|0]
+  optional ChassisfrontepsfaultType chassisfrontepsfault = 6;
+  // [] [0|0]
+  optional ChassisebsfaultType chassisebsfault = 7;
+  // [] [0|0]
+  optional ChassisbackepsfaultType chassisbackepsfault = 8;
+  // [] [0|0]
+  optional bool chassisemergencysta = 9;
+  // [] [0|0]
+  optional LeadacidbatterylowType leadacidbatterylow = 10;
+  // [] [0|0]
+  optional ControlercommunicationfaultType controlercommunicationfault = 11;
+  // [] [0|0]
+  optional bool chassiscrashsta = 12;
+  // [] [0|0]
+  optional Eps_rearcommunicationfaultType eps_rearcommunicationfault = 13;
+  // [] [0|0]
+  optional Eps_frontcommunicationfaultType eps_frontcommunicationfault = 14;
+  // [] [0|0]
+  optional Eds_rrcommunicationfaultType eds_rrcommunicationfault = 15;
+  // [] [0|0]
+  optional Eds_rfcommunicationfaultType eds_rfcommunicationfault = 16;
+  // [] [0|0]
+  optional Eds_lrcommunicationfaultType eds_lrcommunicationfault = 17;
+  // [] [0|0]
+  optional Eds_lfcommunicationfaultType eds_lfcommunicationfault = 18;
+  // [] [0|0]
+  optional Ebs_communicationfaultType ebs_communicationfault = 19;
+  // [] [0|0]
+  optional int32 chassisvcuothererr = 20;
+}
+
+message Chassiserrorcode_1_201 {
+// Report Message
+  // [] [0|0]
+  optional int32 chassisbmserrorcode = 1;
+  // [] [0|0]
+  optional int32 chassisbackepserrorcode = 2;
+  // [] [0|0]
+  optional int32 chassisedstype = 3;
+  // [] [0|0]
+  optional int32 chassisfrontepserrorcode = 4;
+  // [] [0|0]
+  optional int32 chassisepstype = 5;
+  // [] [0|0]
+  optional int32 chassisepbtype = 6;
+  // [] [0|0]
+  optional int32 chassisepberrorcode = 7;
+  // [] [0|0]
+  optional int32 chassisebstype = 8;
+  // [] [0|0]
+  optional int32 chassisebserrorcode = 9;
+}
+
+message Chassiserrorcode_2_202 {
+// Report Message
+  // [] [0|0]
+  optional int32 chassisrredserrorcode2 = 1;
+  // [] [0|0]
+  optional int32 chassisrfedserrorcode2 = 2;
+  // [] [0|0]
+  optional int32 chassislredserrorcode2 = 3;
+  // [] [0|0]
+  optional int32 chassislfedserrorcode2 = 4;
+  // [] [0|0]
+  optional int32 chassisrredserrorcode = 5;
+  // [] [0|0]
+  optional int32 chassisrfedserrorcode = 6;
+  // [] [0|0]
+  optional int32 chassislredserrorcode = 7;
+  // [] [0|0]
+  optional int32 chassislfedserrorcode = 8;
+}
+
+message Triggerfault_210 {
+// Report Message
+  enum TriggertebsfaultType {
+    TRIGGERTEBSFAULT_NONTRIGGER = 0;
+    TRIGGERTEBSFAULT_TRIGGER = 1;
+  }
+  enum TriggerrredsfaultType {
+    TRIGGERRREDSFAULT_NONTRIGGER = 0;
+    TRIGGERRREDSFAULT_TRIGGER = 1;
+  }
+  enum TriggerrfedsfaultType {
+    TRIGGERRFEDSFAULT_NONTRIGGER = 0;
+    TRIGGERRFEDSFAULT_TRIGGER = 1;
+  }
+  enum TriggerlredsfaultType {
+    TRIGGERLREDSFAULT_NONTRIGGER = 0;
+    TRIGGERLREDSFAULT_TRIGGER = 1;
+  }
+  enum TriggerlfedsfaultType {
+    TRIGGERLFEDSFAULT_NONTRIGGER = 0;
+    TRIGGERLFEDSFAULT_TRIGGER = 1;
+  }
+  enum TriggerfrontepsfaultType {
+    TRIGGERFRONTEPSFAULT_NONTRIGGER = 0;
+    TRIGGERFRONTEPSFAULT_TRIGGER = 1;
+  }
+  enum TriggerbacktepsfaultType {
+    TRIGGERBACKTEPSFAULT_NONTRIGGER = 0;
+    TRIGGERBACKTEPSFAULT_TRIGGER = 1;
+  }
+  // [] [0|0]
+  optional TriggertebsfaultType triggertebsfault = 1;
+  // [] [0|0]
+  optional TriggerrredsfaultType triggerrredsfault = 2;
+  // [] [0|0]
+  optional TriggerrfedsfaultType triggerrfedsfault = 3;
+  // [] [0|0]
+  optional TriggerlredsfaultType triggerlredsfault = 4;
+  // [] [0|0]
+  optional TriggerlfedsfaultType triggerlfedsfault = 5;
+  // [] [0|0]
+  optional TriggerfrontepsfaultType triggerfrontepsfault = 6;
+  // [] [0|0]
+  optional TriggerbacktepsfaultType triggerbacktepsfault = 7;
+}
 
 message Throttle_report_500 {
 // Report Message
@@ -199,18 +398,18 @@ message Steering_report_502 {
     STEER_EN_STATE_TAKEOVER = 2;
     STEER_EN_STATE_STANDBY = 3;
   }
+  // [deg] [-500|500]
+  optional int32 steer_angle_rear_actual = 1;
   // [deg/s] [0|0]
-  optional int32 steer_angle_spd_actual = 1;
+  optional int32 steer_angle_spd_actual = 2;
   // Steer system communication fault [] [0|255]
-  optional Steer_flt2Type steer_flt2 = 2;
+  optional Steer_flt2Type steer_flt2 = 3;
   // Steer system hardware fault [] [0|255]
-  optional Steer_flt1Type steer_flt1 = 3;
+  optional Steer_flt1Type steer_flt1 = 4;
   // [] [0|2]
-  optional Steer_en_stateType steer_en_state = 4;
+  optional Steer_en_stateType steer_en_state = 5;
   // [deg] [-500|500]
-  optional int32 steer_angle_actual = 5;
-  // [deg] [-500|500]
-  optional int32 steer_angle_rear_actual = 6;
+  optional int32 steer_angle_actual = 6;
 }
 
 message Gear_report_503 {
@@ -395,56 +594,54 @@ message Bms_report_512 {
   optional double battery_current = 1;
   // Battery Total Voltage [V] [0|300]
   optional double battery_voltage = 2;
-  // Battery State of Charge percentage [%] [0|100]
-  optional int32 battery_soc_percentage = 3;
-  // Battery Low Soc Warn
-  optional bool is_battery_soc_low = 4;
+  // Battery Soc percentage [%] [0|100]
+  optional int32 battery_soc = 3;
 }
 
 message Vin_resp1_514 {
 // Report Message
-  // [] [0|255] to char
-  optional string vin07 = 1;
-  // [] [0|255] to char
-  optional string vin06 = 2;
-  // [] [0|255] to char
-  optional string vin05 = 3;
-  // [] [0|255] to char
-  optional string vin04 = 4;
-  // [] [0|255] to char
-  optional string vin03 = 5;
-  // [] [0|255] to char
-  optional string vin02 = 6;
-  // [] [0|255] to char
-  optional string vin01 = 7;
-  // [] [0|255] to char
-  optional string vin00 = 8;
+  // [] [0|255]
+  optional int32 vin07 = 1;
+  // [] [0|255]
+  optional int32 vin06 = 2;
+  // [] [0|255]
+  optional int32 vin05 = 3;
+  // [] [0|255]
+  optional int32 vin04 = 4;
+  // [] [0|255]
+  optional int32 vin03 = 5;
+  // [] [0|255]
+  optional int32 vin02 = 6;
+  // [] [0|255]
+  optional int32 vin01 = 7;
+  // [] [0|255]
+  optional int32 vin00 = 8;
 }
 
 message Vin_resp2_515 {
 // Report Message
-  // [] [0|255] to char
-  optional string vin15 = 1;
-  // [] [0|255] to char
-  optional string vin14 = 2;
-  // [] [0|255] to char
-  optional string vin13 = 3;
-  // [] [0|255] to char
-  optional string vin12 = 4;
-  // [] [0|255] to char
-  optional string vin11 = 5;
-  // [] [0|255] to char
-  optional string vin10 = 6;
-  // [] [0|255] to char
-  optional string vin09 = 7;
-  // [] [0|255] to char
-  optional string vin08 = 8;
+  // [] [0|255]
+  optional int32 vin15 = 1;
+  // [] [0|255]
+  optional int32 vin14 = 2;
+  // [] [0|255]
+  optional int32 vin13 = 3;
+  // [] [0|255]
+  optional int32 vin12 = 4;
+  // [] [0|255]
+  optional int32 vin11 = 5;
+  // [] [0|255]
+  optional int32 vin10 = 6;
+  // [] [0|255]
+  optional int32 vin09 = 7;
+  // [] [0|255]
+  optional int32 vin08 = 8;
 }
 
 message Vin_resp3_516 {
 // Report Message
-  // [] [0|255] to char
-  optional string vin16 = 1;
+  // [] [0|255]
+  optional int32 vin16 = 1;
 }
 
 message Devkit {
@@ -453,21 +650,25 @@ message Devkit {
   optional Steering_command_102 steering_command_102 = 3; // control message
   optional Gear_command_103 gear_command_103 = 4; // control message
   optional Park_command_104 park_command_104 = 5; // control message
-  optional Throttle_report_500 throttle_report_500 = 6; // report message
-  optional Brake_report_501 brake_report_501 = 7; // report message
-  optional Steering_report_502 steering_report_502 = 8; // report message
-  optional Gear_report_503 gear_report_503 = 9; // report message
-  optional Park_report_504 park_report_504 = 10; // report message
-  optional Vcu_report_505 vcu_report_505 = 11; // report message
-  optional Wheelspeed_report_506 wheelspeed_report_506 = 12; // report message
-  optional Ultr_sensor_1_507 ultr_sensor_1_507 = 13; // report message
-  optional Ultr_sensor_2_508 ultr_sensor_2_508 = 14; // report message
-  optional Ultr_sensor_3_509 ultr_sensor_3_509 = 15; // report message
-  optional Ultr_sensor_4_510 ultr_sensor_4_510 = 16; // report message
-  optional Ultr_sensor_5_511 ultr_sensor_5_511 = 17; // report message
-  optional Bms_report_512 bms_report_512 = 18; // report message
-  optional Vehicle_mode_command_105 vehicle_mode_command_105 = 19; // control message
-  optional Vin_resp1_514 vin_resp1_514 = 20; // report message
-  optional Vin_resp2_515 vin_resp2_515 = 21; // report message
-  optional Vin_resp3_516 vin_resp3_516 = 22; // report message
+  optional Vehicle_mode_command_105 vehicle_mode_command_105 = 6; // control message
+  optional Chassiserrorcode_200 chassiserrorcode_200 = 7; // report message
+  optional Chassiserrorcode_1_201 chassiserrorcode_1_201 = 8; // report message
+  optional Chassiserrorcode_2_202 chassiserrorcode_2_202 = 9; // report message
+  optional Triggerfault_210 triggerfault_210 = 10; // report message
+  optional Throttle_report_500 throttle_report_500 = 11; // report message
+  optional Brake_report_501 brake_report_501 = 12; // report message
+  optional Steering_report_502 steering_report_502 = 13; // report message
+  optional Gear_report_503 gear_report_503 = 14; // report message
+  optional Park_report_504 park_report_504 = 15; // report message
+  optional Vcu_report_505 vcu_report_505 = 16; // report message
+  optional Wheelspeed_report_506 wheelspeed_report_506 = 17; // report message
+  optional Ultr_sensor_1_507 ultr_sensor_1_507 = 18; // report message
+  optional Ultr_sensor_2_508 ultr_sensor_2_508 = 19; // report message
+  optional Ultr_sensor_3_509 ultr_sensor_3_509 = 20; // report message
+  optional Ultr_sensor_4_510 ultr_sensor_4_510 = 21; // report message
+  optional Ultr_sensor_5_511 ultr_sensor_5_511 = 22; // report message
+  optional Bms_report_512 bms_report_512 = 23; // report message
+  optional Vin_resp1_514 vin_resp1_514 = 24; // report message
+  optional Vin_resp2_515 vin_resp2_515 = 25; // report message
+  optional Vin_resp3_516 vin_resp3_516 = 26; // report message
 }
