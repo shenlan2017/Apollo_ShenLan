@@ -12,6 +12,8 @@ py_binary(
         "//modules/canbus/proto:chassis_py_pb2",
         "//modules/control/proto:control_cmd_py_pb2",
         "//modules/localization/proto:localization_py_pb2",
+        "//modules/drivers/gnss/proto:imu_py_pb2",
+        "//modules/localization/proto:gps_py_pb2",
     ],
 )
 

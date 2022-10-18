@@ -1,14 +1,14 @@
 records:
-    filepath: /apollo/data/record_files/2019-04-22-14-27-05/2019-04-22-14-27-05_records/
+    filepath: /apollo/data/bag/calib_lidar2camera/
 
-parse: radar
+parse: camera
 # use one of the following options or add more:
   # lidar
   # radar
   # camera
 
 lidar:     # for velodyne vls-128 lidar
-  channel_name: /apollo/sensor/lidar128/PointCloud2
+  channel_name: /apollo/sensor/lidar128/compensator/PointCloud2
   out_folder_extn: _lidar_vls128
   timestamp_file_extn: _lidar_vls128_timestamp.txt
 
