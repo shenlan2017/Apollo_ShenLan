@@ -23,7 +23,7 @@ cyber_modules {
   }
 }
 cyber_modules {
-  key: "GPS"
+  key: "GNSS/IMU"
   value: {
     dag_files: "/apollo/modules/drivers/gnss/dag/gnss.dag"
   }

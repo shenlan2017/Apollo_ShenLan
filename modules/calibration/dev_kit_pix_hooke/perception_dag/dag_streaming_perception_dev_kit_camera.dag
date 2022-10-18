@@ -1,0 +1,11 @@
+module_config {
+  module_library : "/apollo/bazel-bin/modules/perception/onboard/component/libperception_component_camera.so"
+  components {
+    class_name : "FusionCameraDetectionComponent"
+    config {
+      name: "FusionCameraComponent"
+      config_file_path: "/apollo/modules/calibration/data/dev_kit_pix_hooke/perception_conf/camera/fusion_camera_detection_component.pb.txt"
+      flag_file_path: "/apollo/modules/calibration/data/dev_kit_pix_hooke/perception_conf/perception_common.flag"
+    }
+  }
+}
