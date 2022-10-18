@@ -8,7 +8,6 @@ enum DrivingAction {
   STOP = 0;
   START = 1;
   RESET = 2;
-  VIN_REQ = 3;
 };
 
 message PadMessage {
