@@ -1,0 +1,280 @@
+landmark {
+  name: "1.1.crosswalk_right"
+  waypoint {
+    pose {
+      x: 750983.98781282373
+      y: 2565630.2515596366
+    }
+  }
+  waypoint {
+    pose {
+      x: 751210.16393969627
+      y: 2566012.951971855
+    }
+  }
+}
+landmark {
+  name: "1.2.crosswalk_medium"
+  waypoint {
+    pose {
+      x: 751190.7459310604
+      y: 2566018.0451628743
+    }
+  }
+  waypoint {
+    pose {
+      x: 750979.76724850177
+      y: 2565610.6394702061
+    }
+  }
+}
+landmark {
+  name: "1.3.crosswalk_left"
+  waypoint {
+    pose {
+      x: 751199.76403386123
+      y: 2566021.1752592409
+    }
+  }
+  waypoint {
+    pose {
+      x: 750976.033371361
+      y: 2565608.6990335113
+    }
+  }
+}
+landmark {
+  name: "2.1.static_obstacle"
+  waypoint {
+    pose {
+      x: 752381.96636224375
+      y: 2566011.3124783915
+    }
+  }
+  waypoint {
+    pose {
+      x: 751998.52893957275
+      y: 2566013.3319100398
+    }
+  }
+}
+landmark {
+  name: "2.2.static_obstacle"
+  waypoint {
+    pose {
+      x: 752325.11853891844
+      y: 2566016.196370353
+    }
+  }
+  waypoint {
+    pose {
+      x: 752008.60456263
+      y: 2566017.4401321481
+    }
+  }
+}
+landmark {
+  name: "2.3.static_obstacle"
+  waypoint {
+    pose {
+      x: 752337.86855002108
+      y: 2566012.1095468407
+    }
+  }
+  waypoint {
+    pose {
+      x: 752183.12908534042
+      y: 2566012.649649614
+    }
+  }
+  waypoint {
+    pose {
+      x: 752035.41095260414
+      y: 2566017.5105747283
+    }
+  }
+}
+landmark {
+  name: "3.1.traffic_light_uturn"
+  waypoint {
+    pose {
+      x: 752563.06112651608
+      y: 2563965.295224939
+    }
+  }
+  waypoint {
+    pose {
+      x: 752562.71338244411
+      y: 2563980.5956022153
+    }
+  }
+}
+landmark {
+  name: "3.2.traffic_light_turnleft"
+  waypoint {
+    pose {
+      x: 752561.50043303648
+      y: 2563965.4640875156
+    }
+  }
+  waypoint {
+    pose {
+      x: 752668.07675618655
+      y: 2564039.0183615452
+    }
+  }
+}
+landmark {
+  name: "3.3.traffic_light_straight"
+  waypoint {
+    pose {
+      x: 752588.23522890173
+      y: 2563961.3995245965
+    }
+  }
+  waypoint {
+    pose {
+      x: 752728.48565297225
+      y: 2563960.4362662896
+    }
+  }
+}
+landmark {
+  name: "4.dynamic_obstacle"
+  waypoint {
+    pose {
+      x: 754106.23804338532
+      y: 2565054.879263442
+    }
+    heading: 1.4920123536486916
+  }
+  waypoint {
+    pose {
+      x: 753622.23803580657
+      y: 2566012.9207695778
+    }
+  }
+}
+landmark {
+  name: "5.speed_bump"
+  waypoint {
+    pose {
+      x: 754105.051918026
+      y: 2564914.4051224161
+    }
+  }
+  waypoint {
+    pose {
+      x: 754107.30429745559
+      y: 2565122.2685678075
+    }
+  }
+}
+landmark {
+  name: "6.1.cone"
+  waypoint {
+    pose {
+      x: 751363.60347436485
+      y: 2563968.1173030622
+    }
+  }
+  waypoint {
+    pose {
+      x: 751655.25269050745
+      y: 2563966.1606973773
+    }
+  }
+}
+landmark {
+  name: "6.2.cone"
+  waypoint {
+    pose {
+      x: 751169.788842025
+      y: 2563979.0047379071
+    }
+    heading: -0.02325162294087503
+  }
+  waypoint {
+    pose {
+      x: 751614.4252514852
+      y: 2563974.4088756428
+    }
+    heading: 0
+  }
+}
+landmark {
+  name: "6.3.cone"
+  waypoint {
+    pose {
+      x: 751164.30202261894
+      y: 2563978.0778819518
+    }
+  }
+  waypoint {
+    pose {
+      x: 751614.05705238925
+      y: 2563966.4440656058
+    }
+  }
+}
+landmark {
+  name: "7.1.valet_parking"
+  waypoint {
+    pose {
+      x: 752685.94031495857
+      y: 2565071.4254787946
+    }
+    heading: 1.5385497432261748
+  }
+  waypoint {
+    pose {
+      x: 752697.76812570868
+      y: 2565130.0915605812
+    }
+  }
+}
+landmark {
+  name: "7.2.default_parking"
+  waypoint {
+    pose {
+      x: 752685.93024967762
+      y: 2565073.8995047994
+    }
+  }
+  waypoint {
+    pose {
+      x: 752706.6488746627
+      y: 2565129.7496990394
+    }
+  }
+}
+landmark {
+  name: "8.turnleft_waiting"
+  waypoint {
+    pose {
+      x: 750969.14783660753
+      y: 2564085.9803894414
+    }
+  }
+  waypoint {
+    pose {
+      x: 751140.13675772317
+      y: 2563978.6052922462
+    }
+  }
+}
+landmark {
+  name: "9.turnleft_detouring"
+  waypoint {
+    pose {
+      x: 752830.68347983866
+      y: 2566009.7693699845
+    }
+  }
+  waypoint {
+    pose {
+      x: 752689.7928788485
+      y: 2565918.0893831188
+    }
+  }
+}
