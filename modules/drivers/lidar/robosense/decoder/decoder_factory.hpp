@@ -21,6 +21,7 @@
 #include "modules/drivers/lidar/robosense/decoder/decoder_16.hpp"
 #include "modules/drivers/lidar/robosense/decoder/decoder_32.hpp"
 #include "modules/drivers/lidar/robosense/decoder/decoder_bp.hpp"
+// #include "modules/drivers/lidar/robosense/decoder/decoder_helios.hpp"
 
 namespace apollo {
 namespace drivers {
@@ -36,6 +37,8 @@ class DecoderFactory {
       return std::make_shared<Decoder32<vpoint>>(param);
     } else if (lidar_type == "RSBP") {
       return std::make_shared<DecoderBP<vpoint>>(param);
+    // } else if (lidar_type == "RSHELIOS") {
+    //   return std::make_shared<DecoderHELIOS<vpoint>>(param);
     } else if (lidar_type == "RS128") {
       return std::make_shared<Decoder128<vpoint>>(param);
     } else {

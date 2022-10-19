@@ -139,7 +139,7 @@ int Decoder16<vpoint>::decodeMsopPkt(
     stm.tm_year = mpkt_ptr->header.timestamp.year + 100;
     stm.tm_mon = mpkt_ptr->header.timestamp.month - 1;
     stm.tm_mday = mpkt_ptr->header.timestamp.day;
-    stm.tm_hour = mpkt_ptr->header.timestamp.hour+8;
+    stm.tm_hour = mpkt_ptr->header.timestamp.hour;
     stm.tm_min = mpkt_ptr->header.timestamp.minute;
     stm.tm_sec = mpkt_ptr->header.timestamp.second;
     pkt_time =

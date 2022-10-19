@@ -18,9 +18,10 @@ ODOMETRY_LOC_FILE="odometry_loc.txt"
 IN_FOLDER=$1
 OUT_MAP_FOLDER=$2
 EXTRINSIC_FILE=$3
-LIDAR_TYPE=${4:-lidar16}
+LIDAR_TYPE=${4:-lidar}
 PARSED_DATA_FOLDER="$OUT_MAP_FOLDER/parsed_data"
-CLOUD_TOPIC="/apollo/sensor/$LIDAR_TYPE/compensator/PointCloud2"
+CLOUD_TOPIC="/apollo/sensor/$LIDAR_TYPE//PointCloud2"
+#CLOUD_TOPIC="/apollo/sensor/$LIDAR_TYPE/compensator/PointCloud2"
 
 function data_exporter() {
   local BAG_FILE=$1

@@ -26,10 +26,16 @@
 
 #include "cyber/cyber.h"
 #include "modules/drivers/lidar/common/driver_factory/driver_base.h"
-#include "modules/drivers/lidar/robosense/decoder/decoder_16.hpp"
-#include "modules/drivers/lidar/robosense/decoder/decoder_factory.hpp"
 #include "modules/drivers/lidar/robosense/driver/utility.h"
 #include "modules/drivers/lidar/robosense/input/input.h"
+
+#include <rs_driver/driver/decoder/decoder_mech.hpp>
+#include <rs_driver/driver/decoder/decoder_factory.hpp>
+#include <rs_driver/msg/point_cloud_msg.hpp>
+
+typedef PointCloudT<PointXYZIRT> PointCloudMsg;
+typedef unsigned short uint16_t;
+
 #define PKT_DATA_LENGTH 1248
 
 namespace apollo {
@@ -65,6 +71,7 @@ class RobosenseDriver : public lidar::LidarDriver {
  private:
   void prepareLidarScanMsg(std::shared_ptr<RobosenseScan> msg);
   void preparePointsMsg(std::shared_ptr<PointCloud> msg);
+  void split_frame(uint16_t height, double ts);
   void stop() {
     msop_pkt_queue_.clear();
     difop_pkt_queue_.clear();
@@ -79,7 +86,7 @@ class RobosenseDriver : public lidar::LidarDriver {
   Queue<LidarPacketMsg> difop_pkt_queue_;
   bool thread_flag_;
   std::shared_ptr<std::thread> lidar_thread_ptr_;
-  std::shared_ptr<DecoderBase<PointXYZIT>> lidar_decoder_ptr_;
+  std::shared_ptr<::robosense::lidar::Decoder<PointCloudMsg>> lidar_decoder_ptr_;
   std::shared_ptr<Input> lidar_input_ptr_;
   uint32_t scan_seq_;
   uint32_t points_seq_;

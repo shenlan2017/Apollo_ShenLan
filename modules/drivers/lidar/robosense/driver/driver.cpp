@@ -14,6 +14,7 @@
  * limitations under the License.
  *****************************************************************************/
 #include "modules/drivers/lidar/robosense/driver/driver.h"
+#include <iostream>
 
 namespace apollo {
 namespace drivers {
@@ -22,7 +23,14 @@ using apollo::cyber::Node;
 using apollo::cyber::Writer;
 using apollo::drivers::PointCloud;
 using apollo::drivers::PointXYZIT;
+
 using apollo::drivers::robosense::RobosenseScan;
+
+inline void print_exp(const ::robosense::lidar::Error& msg)
+{
+  std::cout << "----------------" << msg.toString() << std::endl;
+}
+
 bool RobosenseDriver::Init() {
   if (node_ == nullptr) {
     AERROR << "node is nullptr";
@@ -36,24 +44,29 @@ bool RobosenseDriver::Init() {
            << " create error, check cyber is inited.";
     return false;
   }
-  RS_Param param;
+  ::robosense::lidar::RSDecoderParam param;
+  //RS_Param param;
   param.min_distance = conf_.min_distance();
   param.max_distance = conf_.max_distance();
   param.start_angle = conf_.start_angle();
   param.end_angle = conf_.end_angle();
-  param.cut_angle = conf_.cut_angle();
+  //param.cut_angle = conf_.cut_angle();
   param.use_lidar_clock = conf_.use_lidar_clock();
-  param.echo = RS_ECHO_MODE(conf_.echo_mode());
+  //param.echo = RS_ECHO_MODE(conf_.echo_mode());
   if (conf_.model() != "RS16" && conf_.model() != "RS32" &&
-      conf_.model() != "RS128" && conf_.model() != "RSBP") {
+      conf_.model() != "RS128" && conf_.model() != "RSBP" && conf_.model() != "RSHELIOS") {
     AERROR << "Wrong input LiDAR Type!";
     return false;
   }
-  lidar_decoder_ptr_ =
-      DecoderFactory<PointXYZIT>::createDecoder(conf_.model(), param);
+//  ::robosense::lidar::LidarType type = strToLidarType(conf_.model());
+  lidar_decoder_ptr_ = ::robosense::lidar::DecoderFactory<PointCloudMsg>::createDecoder(::robosense::lidar::strToLidarType(conf_.model()), param);
+  lidar_decoder_ptr_->point_cloud_ = std::make_shared<PointCloudMsg>();
+  lidar_decoder_ptr_->regCallback(print_exp, 
+  std::bind(&RobosenseDriver::split_frame, this, std::placeholders::_1, std::placeholders::_2));
+
   lidar_input_ptr_ =
-      std::make_shared<Input>(conf_.msop_port(), conf_.difop_port());
-  lidar_decoder_ptr_->loadCalibrationFile(conf_.calibration_file());
+      std::make_shared<Input>(conf_.msop_port(), conf_.difop_port());  // get the lidar raw data
+//  lidar_decoder_ptr_->loadCalibrationFile(conf_.calibration_file());
 
   point_cloud_ptr_.reset(new PointCloud);
   scan_ptr_.reset(new RobosenseScan);
@@ -88,6 +101,39 @@ void RobosenseDriver::getPackets() {
   }
 }
 
+void copyPC(std::shared_ptr<PointCloudMsg> rs_pc, 
+            std::shared_ptr<PointCloud> raw_cloud) {
+  for (auto iter : rs_pc->points) {
+      
+    if (std::isnan(iter.x) || std::isnan(iter.y) ||
+        std::isnan(iter.z)) {
+      continue;
+
+    }
+    PointXYZIT *point = raw_cloud->add_point();
+    point->set_x(iter.x);
+    point->set_y(iter.y);
+    point->set_z(iter.z);
+    point->set_intensity(iter.intensity);
+    point->set_timestamp(iter.timestamp);
+  }
+}
+
+void RobosenseDriver::split_frame(uint16_t height, double ts) {
+  std::shared_ptr<PointCloudMsg> rs_pc = lidar_decoder_ptr_->point_cloud_;
+  std::shared_ptr<PointCloud> raw_cloud = point_cloud_ptr_;
+  copyPC(rs_pc, raw_cloud);
+  raw_cloud->set_height(height);
+  preparePointsMsg(raw_cloud);
+  if (conf_.use_lidar_clock()) {
+    const auto timestamp = ts;
+    raw_cloud->set_measurement_time(static_cast<double>(timestamp) / 1e9);
+    raw_cloud->mutable_header()->set_lidar_timestamp(timestamp);
+  }
+
+  lidar_decoder_ptr_->point_cloud_ = std::make_shared<PointCloudMsg>();
+}
+
 void RobosenseDriver::processMsopPackets() {
   while (msop_pkt_queue_.m_quque.size() > 0 && thread_flag_) {
     LidarPacketMsg pkt = msop_pkt_queue_.m_quque.front();
@@ -100,11 +146,49 @@ void RobosenseDriver::processMsopPackets() {
     std::shared_ptr<std::vector<PointXYZIT>> point_vec_ptr =
         std::make_shared<std::vector<PointXYZIT>>();
     int ret = 0;
+
     if (thread_flag_) {
-      ret = lidar_decoder_ptr_->processMsopPkt(pkt.packet.data(), point_vec_ptr,
-                                               height_ptr);
+      //ret = lidar_decoder_ptr_->processMsopPkt(pkt.packet.data(), point_vec_ptr, height_ptr); // height_ptr is the number of laser channels for lidar,eg 16/32/64
+      ret = lidar_decoder_ptr_->processMsopPkt(pkt.packet.data(), pkt.packet.size());
     }
+
+    if (ret) {
+      if (point_cloud_ptr_->point_size() != 0) {
+          pointcloud_writer_->Write(point_cloud_ptr_);
+        }
+        std::shared_ptr<RobosenseScan> raw_scan = scan_ptr_;
+        prepareLidarScanMsg(raw_scan);
+        scan_writer_->Write(raw_scan);
+        point_cloud_ptr_.reset(new PointCloud);
+        scan_ptr_.reset(new RobosenseScan);
+    }
+    /*
+    //this is error
+    #define E_DECODE_OK 0
+    #define E_FRAME_SPLIT 1
+    // TODO: change from here
+    
     if (ret == E_DECODE_OK || ret == E_FRAME_SPLIT) {
+      std::cout << "HI processMsopPackets  5" <<  thread_flag_ << std::endl;
+      std::cout <<"points_ " << lidar_decoder_ptr_ ->point_cloud_ ->frame_id << std::endl;
+
+      for (auto iter : lidar_decoder_ptr_ ->point_cloud_ ->points) {
+        
+        if (std::isnan(iter.x) || std::isnan(iter.y) ||
+            std::isnan(iter.z)) {
+          continue;
+
+        }
+        PointXYZIT *point = point_cloud_ptr_->add_point();
+        point->set_x(iter.x);
+        point->set_y(iter.y);
+        point->set_z(iter.z);
+        point->set_intensity(iter.intensity);
+        point->set_timestamp(iter.timestamp);
+      }
+      std::cout << "HI processMsopPackets  6" <<  thread_flag_ << std::endl;
+      //TODO: code end here
+      
       for (auto iter : *point_vec_ptr) {
         if (std::isnan(iter.x()) || std::isnan(iter.y()) ||
             std::isnan(iter.z())) {
@@ -117,7 +201,9 @@ void RobosenseDriver::processMsopPackets() {
         point->set_intensity(iter.intensity());
         point->set_timestamp(iter.timestamp());
       }
+      
       if (ret == E_FRAME_SPLIT) {
+      std::cout << "HI processMsopPackets  7" <<  thread_flag_ << std::endl;
         std::shared_ptr<PointCloud> raw_cloud = point_cloud_ptr_;
         raw_cloud->set_height(*height_ptr);
         preparePointsMsg(raw_cloud);
@@ -139,6 +225,7 @@ void RobosenseDriver::processMsopPackets() {
         scan_ptr_.reset(new RobosenseScan);
       }
     }
+    */
   }
   msop_pkt_queue_.is_task_finished.store(true);
 }
@@ -147,7 +234,8 @@ void RobosenseDriver::processDifopPackets() {
   while (difop_pkt_queue_.m_quque.size() > 0 && thread_flag_) {
     LidarPacketMsg pkt = difop_pkt_queue_.m_quque.front();
     difop_pkt_queue_.pop();
-    lidar_decoder_ptr_->processDifopPkt(pkt.packet.data());
+    //lidar_decoder_ptr_->processDifopPkt(pkt.packet.data());
+    lidar_decoder_ptr_->processDifopPkt(pkt.packet.data(), pkt.packet.size());
   }
   difop_pkt_queue_.is_task_finished.store(true);
 }
@@ -164,6 +252,7 @@ void RobosenseDriver::preparePointsMsg(std::shared_ptr<PointCloud> msg) {
   msg->mutable_header()->set_sequence_num(++points_seq_);
   msg->mutable_header()->set_frame_id(conf_.frame_id());
   msg->mutable_header()->set_timestamp_sec(cyber::Time().Now().ToSecond());
+  long kSecondToNanoFactor = 1;  // this parameter is wrong.
   msg->mutable_header()->set_lidar_timestamp(cyber::Time().Now().ToSecond() *
                                              kSecondToNanoFactor);
   const auto timestamp =

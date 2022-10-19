@@ -17,6 +17,7 @@ cc_library(
     deps = [
         ":driver",
         "//cyber",
+        "@rs_driver",
     ],
 )
 
@@ -40,6 +41,7 @@ cc_library(
         "//modules/drivers/lidar/robosense:decoder_factory",
         "//modules/drivers/lidar/robosense/input",
         "//modules/drivers/proto:pointcloud_cc_proto",
+        "@rs_driver",
     ],
 )
 

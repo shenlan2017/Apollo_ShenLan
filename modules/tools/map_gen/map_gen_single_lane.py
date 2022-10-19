@@ -24,7 +24,7 @@ from modules.map.proto import map_road_pb2
 import math
 from shapely.geometry import LineString, Point
 
-LANE_WIDTH = 3.3
+LANE_WIDTH = 5
 
 
 def convert(p, p2, distance):

@@ -1,4 +1,5 @@
 # Apollo external dependencies that can be loaded in WORKSPACE files.
+load("//third_party/rs_driver:workspace.bzl", rs_driver = "repo")
 load("//third_party/absl:workspace.bzl", absl = "repo")
 load("//third_party/adolc:workspace.bzl", adolc = "repo")
 load("//third_party/adv_plat:workspace.bzl", adv_plat = "repo")
@@ -43,6 +44,7 @@ load("//third_party/pcl:pcl_configure.bzl", "pcl_configure")
 def initialize_third_party():
     """ Load third party repositories.  See above load() statements. """
 
+    rs_driver()
     absl()
     adolc()
     adv_plat()
