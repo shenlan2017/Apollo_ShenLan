@@ -3,7 +3,7 @@ module_config {
     components {
         class_name : "RobosenseComponent"
         config {
-          name : "ROBOSENSE_Driver"
+          name : "lidar_driver"
           config_file_path : "/apollo/modules/drivers/lidar/robosense/conf/lidar.pb.txt"
         }
     }
@@ -14,7 +14,7 @@ module_config {
     components {
       class_name : "CompensatorComponent"
       config {
-        name : "ROBOSENSE_Compensator"
+        name : "lidar_compensator"
         config_file_path : "/apollo/modules/drivers/lidar/robosense/conf/lidar_compensator.pb.txt"
         readers {channel: "/apollo/sensor/lidar/PointCloud2"}
       }
