@@ -1,7 +1,7 @@
 cyber_modules {
   key: "Camera"
   value: {
-    dag_files: "/apollo/modules/drivers/camera/dag/camera.dag"
+    dag_files: "/apollo/modules/drivers/camera/dag/dev_kit_camera.dag"
   }
 }
 cyber_modules {
@@ -23,15 +23,9 @@ cyber_modules {
   }
 }
 cyber_modules {
-  key: "GPS"
+  key: "GNSS/IMU"
   value: {
     dag_files: "/apollo/modules/drivers/gnss/dag/gnss.dag"
-  }
-}
-cyber_modules {
-  key: "Guardian"
-  value: {
-    dag_files: "/apollo/modules/guardian/dag/guardian.dag"
   }
 }
 cyber_modules {
@@ -41,15 +35,27 @@ cyber_modules {
   }
 }
 cyber_modules {
-  key: "Lidar Perception"
+  key: "Perception Lidar CNNSeg"
   value: {
-    dag_files: "/apollo/modules/perception/production/dag/dag_streaming_perception_dev_kit_lidar.dag"
+    dag_files: "/apollo/modules/perception/production/dag/pix_perception_lidar_cnnseg.dag"
   }
 }
 cyber_modules {
-  key: "Camera Perception"
+  key: "Perception Lidar PointPillar"
   value: {
-    dag_files: "/apollo/modules/perception/production/dag/dag_streaming_perception_dev_kit_camera.dag"
+    dag_files: "/apollo/modules/perception/production/dag/pix_perception_lidar_pointpillar.dag"
+  }
+}
+cyber_modules {
+  key: "Perception Camera"
+  value: {
+    dag_files: "/apollo/modules/perception/production/dag/pix_perception_camera.dag"
+  }
+}
+cyber_modules {
+  key: "Perception Fusion"
+  value: {
+    dag_files: "/apollo/modules/perception/production/dag/pix_perception_fusion.dag"
   }
 }
 cyber_modules {
@@ -88,33 +94,10 @@ cyber_modules {
     dag_files: "/apollo/modules/transform/dag/static_transform.dag"
   }
 }
-
-cyber_modules {
-  key: "SmarterEye"
-  value: {
-    dag_files: "/apollo/modules/drivers/smartereye/dag/smartereye.dag"
-  }
-}
-cyber_modules {
-  key: "Third Party Perception"
-  value: {
-    dag_files: "/apollo/modules/third_party_perception/dag/third_party_perception.dag"
-  }
-}
 cyber_modules {
   key: "TaskManager"
   value: {
     dag_files: "/apollo/modules/task_manager/dag/task_manager.dag"
-  }
-}
-modules {
-  key: "Recorder"
-  value: {
-    start_command: "/apollo/scripts/record_bag.py --start --all"
-    stop_command: "/apollo/scripts/record_bag.py --stop --stop_signal SIGINT"
-    process_monitor_config {
-      command_keywords: "cyber_recorder record"
-    }
   }
 }
 monitored_components {
@@ -140,7 +123,7 @@ monitored_components {
   }
 }
 monitored_components {
-  key: "GNSS"
+  key: "GNSS/IMU"
   value: {
     process {
       command_keywords: "mainboard"
@@ -155,18 +138,11 @@ monitored_components {
     # Special LocalizationMonitor.
   }
 }
-# Disbale ESD-CAN for a while as in some cars we are using B-CAN.
-# monitored_components {
-#   key: "ESD-CAN"
-#   value: {
-#     # Special EsdCanMonitor.
-#   }
-# }
 monitored_components {
-  key: "Lidar 16"
+  key: "Lidar"
   value: {
     channel {
-      name: "/apollo/sensor/lidar16/compensator/PointCloud2"
+      name: "/apollo/sensor/lidar/compensator/PointCloud2"
     }
   }
 }

@@ -52,7 +52,7 @@ third_party/can_card_library/esd_can/include
 third_party/can_card_library/esd_can/lib
 
 # Map data files
-modules/map/data
+# modules/map/data
 
 #dockerfile tarballs
 docker/build/archive/

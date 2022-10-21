@@ -22,8 +22,8 @@ ODOMETRY_LOC_FILE="odometry_loc.txt"
 IN_FOLDER=$1
 EXTRINSIC_FILE=$2
 ZONE_ID=$3
-OUT_MAP_FOLDER="$4/ndt_map"
-LIDAR_TYPE=${5:-lidar128}
+OUT_MAP_FOLDER=$4
+LIDAR_TYPE=${5:-lidar}
 
 PARSED_DATA_FOLDER="$OUT_MAP_FOLDER/parsed_data"
 CLOUD_TOPIC="/apollo/sensor/$LIDAR_TYPE/compensator/PointCloud2"
@@ -53,24 +53,13 @@ function poses_interpolation() {
     --output_poses_path $OUTPUT_POSES_PATH
 }
 
-function create_lossless_map() {
-  /apollo/bazel-bin/modules/localization/msf/local_tool/map_creation/lossless_map_creator \
-    --use_plane_inliers_only true \
-    --pcd_folders $1 \
-    --pose_files $2 \
-    --map_folder $OUT_MAP_FOLDER \
-    --zone_id $ZONE_ID \
-    --coordinate_type UTM \
-    --map_resolution_type single
-}
-
 function create_lossy_map() {
   /apollo/bazel-bin/modules/localization/msf/local_tool/map_creation/lossless_map_to_lossy_map \
     --srcdir $OUT_MAP_FOLDER/lossless_map \
     --dstdir $OUT_MAP_FOLDER
 
-  rm -fr $OUT_MAP_FOLDER/lossless_map
-  rm -fr $OUT_MAP_FOLDER/parsed_data
+  # rm -fr $OUT_MAP_FOLDER/lossless_map
+  # rm -fr $OUT_MAP_FOLDER/parsed_data
   mv $OUT_MAP_FOLDER/lossy_map $OUT_MAP_FOLDER/local_map
 }
 ## 创建create_ndt_map()函数

@@ -23,7 +23,7 @@ IN_FOLDER=$1
 EXTRINSIC_FILE=$2
 ZONE_ID=$3
 OUT_MAP_FOLDER=$4
-LIDAR_TYPE=${5:-lidar128}
+LIDAR_TYPE=${5:-lidar}
 
 PARSED_DATA_FOLDER="$OUT_MAP_FOLDER/parsed_data"
 CLOUD_TOPIC="/apollo/sensor/$LIDAR_TYPE/compensator/PointCloud2"
@@ -61,6 +61,7 @@ function create_lossless_map() {
     --map_folder $OUT_MAP_FOLDER \
     --zone_id $ZONE_ID \
     --coordinate_type UTM \
+    --resolution 0.125 \
     --map_resolution_type single
 }
 
@@ -69,8 +70,8 @@ function create_lossy_map() {
     --srcdir $OUT_MAP_FOLDER/lossless_map \
     --dstdir $OUT_MAP_FOLDER
 
-  rm -fr $OUT_MAP_FOLDER/lossless_map
-  rm -fr $OUT_MAP_FOLDER/parsed_data
+  # rm -fr $OUT_MAP_FOLDER/lossless_map
+  # rm -fr $OUT_MAP_FOLDER/parsed_data
   mv $OUT_MAP_FOLDER/lossy_map $OUT_MAP_FOLDER/local_map
 }
 
