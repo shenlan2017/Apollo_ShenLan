@@ -1,7 +1,7 @@
 header:
   seq: 0
   stamp:
-    secs: 1512689414
+    secs: 0
     nsecs: 0
   frame_id: localization
 child_frame_id: novatel

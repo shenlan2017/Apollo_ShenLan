@@ -1,5 +1,6 @@
+
 camera_dev: "/dev/video0"
-frame_id: "front_6mm"
+frame_id: "camera_front_6mm"
 pixel_format: "yuyv"
 io_method: IO_METHOD_MMAP
 width: 1920
