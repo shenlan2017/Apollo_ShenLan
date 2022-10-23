@@ -1,0 +1,21 @@
+syntax = "proto2";
+package apollo.example;
+import "modules/common/proto/header.proto";
+
+enum TimeZone{
+    GMT = 0;
+    BEIJING = 8;
+}
+
+message DataTime{
+    optional TimeZone time_zone = 1 [default = GMT];
+    optional string time_description = 2;
+}
+
+
+message TimeConversion {
+    optional apollo.common.Header header = 1;
+    optional double current_unix_timestamp = 2;
+    optional double current_gps_timestamp = 3;
+    optional DataTime current_datetime = 4;
+}
