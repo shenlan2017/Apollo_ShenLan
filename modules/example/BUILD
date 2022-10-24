@@ -15,17 +15,17 @@ cc_library(
     ],
 )
 
-cc_library(
-    name = "example_lib_ceres_test",
-    srcs = [
-        "ceres_test.cpp",
-    ],
-    hdrs = glob(["*.h"]),
-    deps = [
-        "@com_google_ceres//:ceres",
-        "@opencv//:core",
-    ],
-)
+# cc_library(
+#     name = "example_lib_ceres_test",
+#     srcs = [
+#         "ceres_test.cpp",
+#     ],
+#     hdrs = glob(["*.h"]),
+#     deps = [
+#         "@com_google_ceres//:ceres",
+#         "@opencv//:core",
+#     ],
+# )
 
 cc_library(
     name = "example_lib_sophus_test",
@@ -60,11 +60,11 @@ cc_binary(
     deps = [":example_lib_test"],
 )
 
-cc_binary(
-    name = "example_ceres_test",
-    linkstatic = 0,
-    deps = [":example_lib_ceres_test"],
-)
+# cc_binary(
+#     name = "example_ceres_test",
+#     linkstatic = 0,
+#     deps = [":example_lib_ceres_test"],
+# )
 
 cc_binary(
     name = "example_sopuhs_test",

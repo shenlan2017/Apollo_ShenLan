@@ -124,6 +124,8 @@ ErrorCode LincolnController::Init(
   return ErrorCode::OK;
 }
 
+bool LincolnController::VerifyID() { return true; }
+
 bool LincolnController::Start() {
   if (!is_initialized_) {
     AERROR << "LincolnController has NOT been initiated.";

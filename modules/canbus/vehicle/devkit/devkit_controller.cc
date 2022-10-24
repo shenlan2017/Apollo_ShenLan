@@ -141,6 +141,10 @@ bool DevkitController::Start() {
   return true;
 }
 
+bool DevkitController::VerifyID() {
+    return true;
+}
+
 void DevkitController::Stop() {
   if (!is_initialized_) {
     AERROR << "DevkitController stops or starts improperly!";
