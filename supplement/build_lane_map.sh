@@ -6,7 +6,7 @@ TOP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 
 echo "[INFO] TOP_DIR is " $TOP_DIR
 
-bash supplement/update_docker.sh
+# bash supplement/update_docker.sh
 echo "[INFO] Installation Dependency Finished."
 
 ./bazel-bin/modules/tools/map_gen/extract_path path.txt $1/*
@@ -34,17 +34,17 @@ echo "[INFO] Lane Build Finished."
 
 bash $TOP_DIR/supplement/msf_map_creator.sh \
     $1 \
-    $TOP_DIR/modules/calibration/data/dev_kit_pix_hooke/lidar_params/lidar16_novatel_extrinsics.yaml \
+    $TOP_DIR/modules/calibration/data/dev_kit_pix_hooke/lidar_params/lidar_novatel_extrinsics.yaml \
     50 \
     $TOP_DIR/modules/map/data/$2 \
-    lidar16
+    lidar
 
 bash $TOP_DIR/supplement/ndt_map_creator.sh \
     $1 \
-    $TOP_DIR/modules/calibration/data/dev_kit_pix_hooke/lidar_params/lidar16_novatel_extrinsics.yaml \
+    $TOP_DIR/modules/calibration/data/dev_kit_pix_hooke/lidar_params/lidar_novatel_extrinsics.yaml \
     50 \
     $TOP_DIR/modules/map/data/$2/ndt_map \
-    lidar16
+    lidar
 
 mkdir /apollo/modules/map/data/$2/ndt_map/local_map
 mv /apollo/modules/map/data/$2/ndt_map/map /apollo/modules/map/data/$2/ndt_map/local_map/map

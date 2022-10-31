@@ -48,6 +48,7 @@ bool NDTLocalizationComponent::Init() {
 bool NDTLocalizationComponent::InitConfig() {
   localization_topic_ = FLAGS_localization_topic;
   lidar_topic_ = FLAGS_lidar_topic;
+  imu_topic_ = "/apollo/sensor/gnss/corrected_imu";
   lidar_pose_topic_ = FLAGS_localization_ndt_topic;
   broadcast_tf_frame_id_ = FLAGS_broadcast_tf_frame_id;
   broadcast_tf_child_frame_id_ = FLAGS_broadcast_tf_child_frame_id;
@@ -64,12 +65,22 @@ bool NDTLocalizationComponent::InitIO() {
   reader_config.channel_name = lidar_topic_;
   reader_config.pending_queue_size = 1;
 
+  // lidar
   std::function<void(const std::shared_ptr<drivers::PointCloud>&)>
       lidar_register_call = std::bind(&NDTLocalizationComponent::LidarCallback,
                                       this, std::placeholders::_1);
   lidar_listener_ = this->node_->CreateReader<drivers::PointCloud>(
       reader_config, lidar_register_call);
 
+  // imu
+  reader_config.channel_name = imu_topic_;
+  reader_config.pending_queue_size = 10;
+  corrected_imu_listener_ =
+      this->node_->CreateReader<localization::CorrectedImu>(
+          reader_config, std::bind(&NDTLocalizationComponent::ImuCallback, this,
+                    std::placeholders::_1));
+
+  // gnss odmetry
   reader_config.channel_name = odometry_status_topic_;
   reader_config.pending_queue_size = 1;
   std::function<void(const std::shared_ptr<drivers::gnss::InsStat>&)>
@@ -79,6 +90,7 @@ bool NDTLocalizationComponent::InitIO() {
   odometry_status_listener_ = this->node_->CreateReader<drivers::gnss::InsStat>(
       reader_config, odometry_status_call);
 
+  // talker
   localization_talker_ =
       this->node_->CreateWriter<LocalizationEstimate>(localization_topic_);
 
@@ -122,6 +134,11 @@ void NDTLocalizationComponent::LidarCallback(
     // publish localization messages
     PublishLidarPoseBroadcastTopic(localization);
   }
+}
+
+void NDTLocalizationComponent::ImuCallback(
+    const std::shared_ptr<localization::CorrectedImu>& imu_msg) {
+  localization_->ImuCallback(imu_msg);
 }
 
 void NDTLocalizationComponent::OdometryStatusCallback(

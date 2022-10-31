@@ -22,10 +22,12 @@
 #include "Eigen/Geometry"
 #include "modules/drivers/gnss/proto/ins.pb.h"
 #include "modules/drivers/proto/pointcloud.pb.h"
+#include "modules/localization/proto/gps.pb.h"
+#include "modules/localization/proto/imu.pb.h"
+#include "modules/localization/proto/localization.pb.h"
+
 #include "modules/localization/ndt/localization_pose_buffer.h"
 #include "modules/localization/ndt/ndt_locator/lidar_locator_ndt.h"
-#include "modules/localization/proto/gps.pb.h"
-#include "modules/localization/proto/localization.pb.h"
 #include "modules/transform/buffer.h"
 
 namespace apollo {
@@ -73,6 +75,8 @@ class NDTLocalization {
   /**@brief get online resolution for ndt localization*/
   inline double GetOnlineResolution() const { return online_resolution_; }
 
+  void ImuCallback(const std::shared_ptr<localization::CorrectedImu>& imu_msg);
+
  private:
   /**@brief transfer pointcloud message to LidarFrame */
   void LidarMsgTransfer(const std::shared_ptr<drivers::PointCloud>& message,
@@ -95,7 +99,7 @@ class NDTLocalization {
   void FillLocalizationMsgHeader(LocalizationEstimate* localization);
   /**@brief fill pose message for LocalizationEstimate struct */
   void ComposeLocalizationEstimate(
-      const Eigen::Affine3d& pose,
+      const Eigen::Affine3d& pose, const localization::CorrectedImu& imu_msg,
       const std::shared_ptr<localization::Gps>& odometry_msg,
       LocalizationEstimate* localization);
   void ComposeLidarResult(double time_stamp, const Eigen::Affine3d& pose,
@@ -107,16 +111,29 @@ class NDTLocalization {
   bool FindNearestOdometryStatus(const double odometry_timestamp,
                                  drivers::gnss::InsStat* status);
 
+  bool isSupportInterpolationPose(double time, TimeStampPose& pre_pose,
+                                  TimeStampPose& next_pose);
+
+  bool FindMatchingIMU(const double gps_timestamp_sec, CorrectedImu* imu_msg);
+  bool InterpolateIMU(const CorrectedImu& imu1, const CorrectedImu& imu2,
+                      const double timestamp_sec, CorrectedImu* imu_msg);
+  template <class T>
+  T InterpolateXYZ(const T& p1, const T& p2, const double frac1);
+
  private:
   std::string module_name_ = "ndt_localization";
   LocalizationPoseBuffer pose_buffer_;
+
+  std::list<localization::CorrectedImu> imu_list_;
+  size_t imu_list_max_size_ = 50;
+  std::mutex imu_list_mutex_;
 
   transform::Buffer* tf_buffer_ = nullptr;
   std::string tf_target_frame_id_ = "";
   std::string tf_source_frame_id_ = "";
 
   LidarLocatorNdt lidar_locator_;
-  int zone_id_ = 10;
+  int zone_id_ = 51;
   double max_height_ = 100.0;
   int localization_seq_num_ = 0;
   unsigned int resolution_id_ = 0;
@@ -132,9 +149,9 @@ class NDTLocalization {
   double warnning_ndt_score_ = 1.0;
   double error_ndt_score_ = 2.0;
   bool is_service_started_ = false;
+  int filter = 0;
 
-  // std::list<TimeStampPose> odometry_buffer_;
-  std::list<TimeStampPose,Eigen::aligned_allocator<TimeStampPose>> odometry_buffer_;
+  std::list<TimeStampPose, Eigen::aligned_allocator<TimeStampPose>> odometry_buffer_;
   std::mutex odometry_buffer_mutex_;
   unsigned int odometry_buffer_size_ = 0;
   const unsigned int max_odometry_buffer_size_ = 100;
@@ -143,7 +160,7 @@ class NDTLocalization {
   LocalizationStatus localization_status_;
 
   std::list<drivers::gnss::InsStat> odometry_status_list_;
-  size_t odometry_status_list_max_size_ = 10;
+  size_t odometry_status_list_max_size_ = 100;
   std::mutex odometry_status_list_mutex_;
   double odometry_status_time_diff_threshold_ = 1.0;
 

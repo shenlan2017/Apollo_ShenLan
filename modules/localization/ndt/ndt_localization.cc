@@ -19,12 +19,14 @@
 #include "Eigen/Geometry"
 #include "yaml-cpp/yaml.h"
 
+#include "modules/drivers/gnss/proto/gnss_best_pose.pb.h"
+
 #include "cyber/common/file.h"
 #include "cyber/common/log.h"
 #include "cyber/time/clock.h"
 #include "modules/common/configs/config_gflags.h"
 #include "modules/common/math/quaternion.h"
-#include "modules/drivers/gnss/proto/gnss_best_pose.pb.h"
+#include "modules/common/util/string_util.h"
 #include "modules/localization/common/localization_gflags.h"
 
 namespace apollo {
@@ -46,6 +48,7 @@ void NDTLocalization::Init() {
   bad_score_count_threshold_ = FLAGS_ndt_bad_score_count_threshold;
   warnning_ndt_score_ = FLAGS_ndt_warnning_ndt_score;
   error_ndt_score_ = FLAGS_ndt_error_ndt_score;
+
 
   std::string map_path_ =
       FLAGS_map_dir + "/" + FLAGS_ndt_map_dir + "/" + FLAGS_local_map_name;
@@ -142,7 +145,7 @@ void NDTLocalization::OdometryCallback(
     }
   }
 
-  if (ndt_debug_log_flag_) {
+  if (1) {
     AINFO << "NDTLocalization Debug Log: odometry msg: "
           << std::setprecision(15) << "time: " << odometry_time << ", "
           << "x: " << odometry_msg->localization().position().x() << ", "
@@ -159,8 +162,12 @@ void NDTLocalization::OdometryCallback(
     localization_pose =
         pose_buffer_.UpdateOdometryPose(odometry_time, odometry_pose);
   }
-  ComposeLocalizationEstimate(localization_pose, odometry_msg,
+
+  CorrectedImu imu_msg;
+  FindMatchingIMU(odometry_time, &imu_msg);
+  ComposeLocalizationEstimate(localization_pose, imu_msg, odometry_msg,
                               &localization_result_);
+
   drivers::gnss::InsStat odometry_status;
   FindNearestOdometryStatus(odometry_time, &odometry_status);
   ComposeLocalizationStatus(odometry_status, &localization_status_);
@@ -176,6 +183,9 @@ void NDTLocalization::LidarCallback(
 
   double time_stamp = lidar_frame.measurement_time;
   Eigen::Affine3d odometry_pose = Eigen::Affine3d::Identity();
+
+// #define ONLY_USE_LIDAR
+#ifndef ONLY_USE_LIDAR
   if (!QueryPoseFromBuffer(time_stamp, &odometry_pose)) {
     if (!QueryPoseFromTF(time_stamp, &odometry_pose)) {
       AERROR << "Can not query forecast pose";
@@ -185,7 +195,20 @@ void NDTLocalization::LidarCallback(
   } else {
     AINFO << "Query pose from buffer";
   }
+#endif
+
   if (!lidar_locator_.IsInitialized()) {
+#ifdef ONLY_USE_LIDAR
+    if (!QueryPoseFromBuffer(time_stamp, &odometry_pose)) {
+      if (!QueryPoseFromTF(time_stamp, &odometry_pose)) {
+        AERROR << "Can not query forecast pose";
+        return;
+      }
+      AINFO << "Query pose from TF";
+    } else {
+      AINFO << "Query pose from buffer";
+    }
+#endif
     lidar_locator_.Init(odometry_pose, resolution_id_, zone_id_);
     return;
   }
@@ -261,8 +284,164 @@ void NDTLocalization::FillLocalizationMsgHeader(
   header->set_sequence_num(++localization_seq_num_);
 }
 
+void NDTLocalization::ImuCallback(
+    const std::shared_ptr<localization::CorrectedImu>& imu_msg) {
+  std::unique_lock<std::mutex> lock(imu_list_mutex_);
+  if (imu_list_.size() < imu_list_max_size_) {
+    imu_list_.push_back(*imu_msg);
+  } else {
+    imu_list_.pop_front();
+    imu_list_.push_back(*imu_msg);
+  }
+}
+
+bool NDTLocalization::FindMatchingIMU(const double gps_timestamp_sec,
+                                      CorrectedImu* imu_msg) {
+  if (imu_msg == nullptr) {
+    AERROR << "imu_msg should NOT be nullptr.";
+    return false;
+  }
+
+  std::unique_lock<std::mutex> lock(imu_list_mutex_);
+  auto imu_list = imu_list_;
+  lock.unlock();
+
+  if (imu_list.empty()) {
+    AERROR << "Cannot find Matching IMU. "
+           << "IMU message Queue is empty! GPS timestamp[" << gps_timestamp_sec
+           << "]";
+    return false;
+  }
+
+  // scan imu buffer, find first imu message that is newer than the given
+  // timestamp
+  auto imu_it = imu_list.begin();
+  for (; imu_it != imu_list.end(); ++imu_it) {
+    if ((*imu_it).header().timestamp_sec() - gps_timestamp_sec >
+        std::numeric_limits<double>::min()) {
+      break;
+    }
+  }
+
+  if (imu_it != imu_list.end()) {  // found one
+    if (imu_it == imu_list.begin()) {
+      AERROR << "IMU queue too short or request too old. "
+             << "Oldest timestamp[" << imu_list.front().header().timestamp_sec()
+             << "], Newest timestamp["
+             << imu_list.back().header().timestamp_sec() << "], GPS timestamp["
+             << gps_timestamp_sec << "]";
+      *imu_msg = imu_list.front();  // the oldest imu
+    } else {
+      // here is the normal case
+      auto imu_it_1 = imu_it;
+      imu_it_1--;
+      if (!(*imu_it).has_header() || !(*imu_it_1).has_header()) {
+        AERROR << "imu1 and imu_it_1 must both have header.";
+        return false;
+      }
+      if (!InterpolateIMU(*imu_it_1, *imu_it, gps_timestamp_sec, imu_msg)) {
+        AERROR << "failed to interpolate IMU";
+        return false;
+      }
+    }
+  } else {
+    // give the newest imu, without extrapolation
+    *imu_msg = imu_list.back();
+    if (imu_msg == nullptr) {
+      AERROR << "Fail to get latest observed imu_msg.";
+      return false;
+    }
+
+    if (!imu_msg->has_header()) {
+      AERROR << "imu_msg must have header.";
+      return false;
+    }
+
+    if (std::fabs(imu_msg->header().timestamp_sec() - gps_timestamp_sec) >
+        0.02) {
+      // 20ms threshold to report error
+      AERROR << "Cannot find Matching IMU. IMU messages too old. "
+             << "Newest timestamp[" << imu_list.back().header().timestamp_sec()
+             << "], GPS timestamp[" << gps_timestamp_sec << "]";
+    }
+  }
+
+  return true;
+}
+
+bool NDTLocalization::InterpolateIMU(const CorrectedImu& imu1,
+                                     const CorrectedImu& imu2,
+                                     const double timestamp_sec,
+                                     CorrectedImu* imu_msg) {
+  if (!(imu1.header().has_timestamp_sec() &&
+        imu2.header().has_timestamp_sec())) {
+    AERROR << "imu1 and imu2 has no header or no timestamp_sec in header";
+    return false;
+  }
+  if (timestamp_sec < imu1.header().timestamp_sec()) {
+    AERROR << "[InterpolateIMU1]: the given time stamp["
+           << FORMAT_TIMESTAMP(timestamp_sec)
+           << "] is older than the 1st message["
+           << FORMAT_TIMESTAMP(imu1.header().timestamp_sec()) << "]";
+    *imu_msg = imu1;
+  } else if (timestamp_sec > imu2.header().timestamp_sec()) {
+    AERROR << "[InterpolateIMU2]: the given time stamp[" << timestamp_sec
+           << "] is newer than the 2nd message["
+           << imu2.header().timestamp_sec() << "]";
+    *imu_msg = imu2;
+  } else {
+    *imu_msg = imu1;
+    imu_msg->mutable_header()->set_timestamp_sec(timestamp_sec);
+
+    double time_diff =
+        imu2.header().timestamp_sec() - imu1.header().timestamp_sec();
+    if (fabs(time_diff) >= 0.001) {
+      double frac1 =
+          (timestamp_sec - imu1.header().timestamp_sec()) / time_diff;
+
+      if (imu1.imu().has_angular_velocity() &&
+          imu2.imu().has_angular_velocity()) {
+        auto val = InterpolateXYZ(imu1.imu().angular_velocity(),
+                                  imu2.imu().angular_velocity(), frac1);
+        imu_msg->mutable_imu()->mutable_angular_velocity()->CopyFrom(val);
+      }
+
+      if (imu1.imu().has_linear_acceleration() &&
+          imu2.imu().has_linear_acceleration()) {
+        auto val = InterpolateXYZ(imu1.imu().linear_acceleration(),
+                                  imu2.imu().linear_acceleration(), frac1);
+        imu_msg->mutable_imu()->mutable_linear_acceleration()->CopyFrom(val);
+      }
+
+      if (imu1.imu().has_euler_angles() && imu2.imu().has_euler_angles()) {
+        auto val = InterpolateXYZ(imu1.imu().euler_angles(),
+                                  imu2.imu().euler_angles(), frac1);
+        imu_msg->mutable_imu()->mutable_euler_angles()->CopyFrom(val);
+      }
+    }
+  }
+  return true;
+}
+
+template <class T>
+T NDTLocalization::InterpolateXYZ(const T& p1, const T& p2,
+                                  const double frac1) {
+  T p;
+  double frac2 = 1.0 - frac1;
+  if (p1.has_x() && !std::isnan(p1.x()) && p2.has_x() && !std::isnan(p2.x())) {
+    p.set_x(p1.x() * frac2 + p2.x() * frac1);
+  }
+  if (p1.has_y() && !std::isnan(p1.y()) && p2.has_y() && !std::isnan(p2.y())) {
+    p.set_y(p1.y() * frac2 + p2.y() * frac1);
+  }
+  if (p1.has_z() && !std::isnan(p1.z()) && p2.has_z() && !std::isnan(p2.z())) {
+    p.set_z(p1.z() * frac2 + p2.z() * frac1);
+  }
+  return p;
+}
+
 void NDTLocalization::ComposeLocalizationEstimate(
-    const Eigen::Affine3d& pose,
+    const Eigen::Affine3d& pose, const localization::CorrectedImu& imu_msg,
     const std::shared_ptr<localization::Gps>& odometry_msg,
     LocalizationEstimate* localization) {
   localization->Clear();
@@ -309,11 +488,64 @@ void NDTLocalization::ComposeLocalizationEstimate(
     mutable_pose->mutable_angular_velocity_vrf()->CopyFrom(
         odometry_pose.angular_velocity_vrf());
   }
+
+  if (imu_msg.has_imu()) {
+    const auto& imu = imu_msg.imu();
+    // linear acceleration
+    if (imu.has_linear_acceleration()) {
+      if (localization->pose().has_orientation()) {
+        // linear_acceleration:
+        // convert from vehicle reference to map reference
+        Eigen::Vector3d orig(imu.linear_acceleration().x(),
+                      imu.linear_acceleration().y(),
+                      imu.linear_acceleration().z());
+        Eigen::Vector3d vec = common::math::QuaternionRotate(
+            localization->pose().orientation(), orig);
+        mutable_pose->mutable_linear_acceleration()->set_x(vec[0]);
+        mutable_pose->mutable_linear_acceleration()->set_y(vec[1]);
+        mutable_pose->mutable_linear_acceleration()->set_z(vec[2]);
+
+        // linear_acceleration_vfr
+        mutable_pose->mutable_linear_acceleration_vrf()->CopyFrom(
+            imu.linear_acceleration());
+      } else {
+        AERROR << "[PrepareLocalizationMsg]: "
+               << "fail to convert linear_acceleration";
+      }
+    }
+
+    // angular velocity
+    if (imu.has_angular_velocity()) {
+      if (localization->pose().has_orientation()) {
+        // angular_velocity:
+        // convert from vehicle reference to map reference
+        Eigen::Vector3d orig(imu.angular_velocity().x(),
+                             imu.angular_velocity().y(),
+                             imu.angular_velocity().z());
+        Eigen::Vector3d vec = common::math::QuaternionRotate(
+            localization->pose().orientation(), orig);
+        mutable_pose->mutable_angular_velocity()->set_x(vec[0]);
+        mutable_pose->mutable_angular_velocity()->set_y(vec[1]);
+        mutable_pose->mutable_angular_velocity()->set_z(vec[2]);
+
+        // angular_velocity_vf
+        mutable_pose->mutable_angular_velocity_vrf()->CopyFrom(
+            imu.angular_velocity());
+      } else {
+        AERROR << "[PrepareLocalizationMsg]: fail to convert angular_velocity";
+      }
+    }
+
+    // euler angle
+    if (imu.has_euler_angles()) {
+      mutable_pose->mutable_euler_angles()->CopyFrom(imu.euler_angles());
+    }
+  }
 }
 
 void NDTLocalization::ComposeLidarResult(double time_stamp,
                                          const Eigen::Affine3d& pose,
-                                         LocalizationEstimate* localization) {
+    LocalizationEstimate* localization) {
   localization->Clear();
   FillLocalizationMsgHeader(localization);
 
@@ -401,33 +633,57 @@ void NDTLocalization::ComposeLocalizationStatus(
   }
 }
 
+bool NDTLocalization::isSupportInterpolationPose(double time,
+                                                 TimeStampPose& pre_pose,
+                                                 TimeStampPose& next_pose) {
+  std::lock_guard<std::mutex> lock(odometry_buffer_mutex_);
+  TimeStampPose timestamp_pose = odometry_buffer_.back();
+  AINFO << std::setprecision(20) << time;
+  AINFO << std::setprecision(20) << odometry_buffer_.front().timestamp;
+  AINFO << std::setprecision(20) << odometry_buffer_.back().timestamp;
+  // check abnormal timestamp
+  if (time > timestamp_pose.timestamp) {
+    AINFO << "-----------------------";
+    AINFO << "query time is newer than latest odometry time, it doesn't "
+             "make sense!";
+    return false;
+  }
+  // search from reverse direction
+  auto iter = odometry_buffer_.crbegin();
+  for (; iter != odometry_buffer_.crend(); ++iter) {
+    if (iter->timestamp < time) {
+      break;
+    }
+  }
+  if (iter == odometry_buffer_.crend()) {
+    AINFO << "Cannot find matching pose from odometry buffer";
+    return false;
+  }
+  pre_pose = *iter;
+  next_pose = *(--iter);
+  return true;
+}
+
 bool NDTLocalization::QueryPoseFromBuffer(double time, Eigen::Affine3d* pose) {
   CHECK_NOTNULL(pose);
 
   TimeStampPose pre_pose;
   TimeStampPose next_pose;
-  {
-    std::lock_guard<std::mutex> lock(odometry_buffer_mutex_);
-    TimeStampPose timestamp_pose = odometry_buffer_.back();
-    // check abnormal timestamp
-    if (time > timestamp_pose.timestamp) {
-      AERROR << "query time is newer than latest odometry time, it doesn't "
-                "make sense!";
-      return false;
+
+  bool interpolation_flag = false;
+  int count_flag = 10;
+  while (count_flag-- > 0) {
+    if (isSupportInterpolationPose(time, pre_pose, next_pose)){
+      interpolation_flag = true;
+      break;
     }
-    // search from reverse direction
-    auto iter = odometry_buffer_.crbegin();
-    for (; iter != odometry_buffer_.crend(); ++iter) {
-      if (iter->timestamp < time) {
-        break;
-      }
-    }
-    if (iter == odometry_buffer_.crend()) {
-      AINFO << "Cannot find matching pose from odometry buffer";
-      return false;
-    }
-    pre_pose = *iter;
-    next_pose = *(--iter);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+
+  if (!interpolation_flag){
+    AINFO << "-----------------------";
+    AERROR << "query time is newer than latest odometry time, it doesn't make sense!";
+    return false;
   }
   // interpolation
   double v1 =
@@ -438,20 +694,14 @@ bool NDTLocalization::QueryPoseFromBuffer(double time, Eigen::Affine3d* pose) {
       pre_pose.pose.translation() * v1 + next_pose.pose.translation() * v2;
 
   Eigen::Quaterniond pre_quat(pre_pose.pose.linear());
-
-  common::math::EulerAnglesZXYd pre_euler(pre_quat.w(), pre_quat.x(),
-                                          pre_quat.y(), pre_quat.z());
-
   Eigen::Quaterniond next_quat(next_pose.pose.linear());
-  common::math::EulerAnglesZXYd next_euler(next_quat.w(), next_quat.x(),
-                                           next_quat.y(), next_quat.z());
+  double tmp_quat[4] = {};
+  tmp_quat[0] = pre_quat.w() * v1 + next_quat.w() * v2;
+  tmp_quat[1] = pre_quat.x() * v1 + next_quat.x() * v2;
+  tmp_quat[2] = pre_quat.y() * v1 + next_quat.y() * v2;
+  tmp_quat[3] = pre_quat.z() * v1 + next_quat.z() * v2;
 
-  double tmp_euler[3] = {};
-  tmp_euler[0] = pre_euler.pitch() * v1 + next_euler.pitch() * v2;
-  tmp_euler[1] = pre_euler.roll() * v1 + next_euler.roll() * v2;
-  tmp_euler[2] = pre_euler.yaw() * v1 + next_euler.yaw() * v2;
-  common::math::EulerAnglesZXYd euler(tmp_euler[1], tmp_euler[0], tmp_euler[2]);
-  Eigen::Quaterniond quat = euler.ToQuaternion();
+  Eigen::Quaterniond quat(tmp_quat[0], tmp_quat[1], tmp_quat[2], tmp_quat[3]);
   quat.normalize();
   pose->linear() = quat.toRotationMatrix();
   return true;

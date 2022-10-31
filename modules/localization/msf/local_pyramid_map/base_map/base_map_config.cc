@@ -32,7 +32,8 @@ BaseMapConfig::BaseMapConfig(const std::string &map_version) {
   map_resolutions_.push_back(0.125);
   map_node_size_x_ = 1024;                                   // in pixels
   map_node_size_y_ = 1024;                                   // in pixels
-  map_range_ = Rect2D<double>(0, 0, 1000448.0, 10000384.0);  // in meters
+  map_range_ = Rect2D<double>(-1000448.0, -1000448.0, 1000448.0,
+                              10000384.0);  // in meters
   map_ground_height_offset_ = 1.7f;
   map_is_compression_ = true;
   map_folder_path_ = ".";
