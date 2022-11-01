@@ -139,9 +139,16 @@ if __name__ == "__main__":
                 ax = localization.pose.angular_velocity.x
                 ay = localization.pose.angular_velocity.y
                 az = localization.pose.angular_velocity.z
+                gx_vrf = localization.pose.linear_acceleration_vrf.x
+                gy_vrf = localization.pose.linear_acceleration_vrf.y
+                gz_vrf = localization.pose.linear_acceleration_vrf.z
+                ax_vrf = localization.pose.angular_velocity_vrf.x
+                ay_vrf = localization.pose.angular_velocity_vrf.y
+                az_vrf = localization.pose.angular_velocity_vrf.z
+                heading = localization.pose.heading
                 f.write("# Simplify Information: \n")
-                f.write("# timestamp_sec measurement_time position.x position.y position.z orientation.qx orientation.qy orientation.qz orientation.qw velocity.x velocity.y velocity.z linear_acceleration.x linear_acceleration.y linear_acceleration.z angular_velocity.x angular_velocity.y angular_velocity.z \n")
-                f.write((' ').join(str(x) for x in [ts, mt, px, py, pz, qx, qy, qz, qw, vx, vy, vz, gx, gy, gz, ax, ay, az]))
+                f.write("# timestamp_sec measurement_time position orientation(xyzw) velocity linear_acceleration angular_velocity linear_acceleration_vrf angular_velocity_vrf heading\n")
+                f.write((' ').join(str(x) for x in [ts, mt, px, py, pz, qx, qy, qz, qw, vx, vy, vz, gx, gy, gz, ax, ay, az, gx_vrf, gy_vrf, gz_vrf, ax_vrf, ay_vrf, az_vrf, heading]))
                 f.write("\n\n# Complete Information\n")
                 f.write(str(localization))
             continue
@@ -164,9 +171,11 @@ if __name__ == "__main__":
                 rl = chassis.wheel_speed.wheel_spd_rl
                 fr = chassis.wheel_speed.wheel_spd_fr
                 fl = chassis.wheel_speed.wheel_spd_fl
+                sp = chassis.speed_mps
+                st = chassis.steering_percentage
                 f.write("# Simplify Information: \n")
-                f.write("# timestamp_sec wheel_spd_rr wheel_spd_rl wheel_spd_fr wheel_spd_fl\n")
-                f.write((' ').join(str(x) for x in [ts, rr, rl, fr, fl]))
+                f.write("# timestamp_sec wheel_spd_rr wheel_spd_rl wheel_spd_fr wheel_spd_fl speed_mps steering_percentage\n")
+                f.write((' ').join(str(x) for x in [ts, rr, rl, fr, fl, sp, st]))
                 f.write("\n\n# Complete Information\n")
                 f.write(str(chassis))
             continue
@@ -176,6 +185,13 @@ if __name__ == "__main__":
             ins_status.ParseFromString(msg.message)
             file_name = args.output + "/ins_stat/" + str(timestamp) + ".txt"
             with open(file_name, 'w') as f:
+                ts = ins_status.header.timestamp_sec
+                ins = ins_status.ins_status
+                pos = ins_status.pos_type
+                f.write("# Simplify Information: \n")
+                f.write("# timestamp_sec ins_status pos_type\n")
+                f.write((' ').join(str(x) for x in [ts, ins, pos]))
+                f.write("\n\n# Complete Information\n")
                 f.write(str(ins_status))
             continue
 
@@ -261,9 +277,9 @@ if __name__ == "__main__":
                 f.write(str(rtk_pose))
             continue
 
-        if msg.topic == "/apollo/sensor/lidar128/compensator/PointCloud2" or \
-           msg.topic == "/apollo/sensor/lidar16/compensator/PointCloud2" or \
-           msg.topic == "/apollo/sensor/lidar32/compensator/PointCloud2":
+        if msg.topic == "/apollo/sensor/lidar128/PointCloud2" or \
+           msg.topic == "/apollo/sensor/lidar16/PointCloud2" or \
+           msg.topic == "/apollo/sensor/lidar/PointCloud2":
             file_name = args.output + "/lidar_pcd/"
             parse_data(msg.topic, msg.message, file_name)
             continue
