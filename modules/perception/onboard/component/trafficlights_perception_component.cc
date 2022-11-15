@@ -934,7 +934,6 @@ void TrafficLightsPerceptionComponent::Visualize(
   char str[100];
   std::string tl_string;
   cv::Scalar tl_color;
-
   if (lights.empty()) {
     return;
   }
@@ -1017,9 +1016,13 @@ void TrafficLightsPerceptionComponent::Visualize(
               1.5, cv::Scalar(255, 255, 255), 3);
 
   cv::resize(output_image, output_image, cv::Size(), 0.5, 0.5);
-  cv::imwrite(absl::StrCat("/apollo/debug_vis/",
-                           std::to_string(frame.timestamp), ".jpg"),
-              output_image);
+
+  cv::imshow("traffic window", output_image);
+  cv::waitKey(5);
+
+  //cv::imwrite(absl::StrCat("/apollo/debug_vis/",
+  //                         std::to_string(frame.timestamp), ".jpg"),
+  //            output_image);
 }
 
 void TrafficLightsPerceptionComponent::SyncV2XTrafficLights(

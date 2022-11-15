@@ -9,7 +9,7 @@ module_config {
         flag_file_path : "/apollo/modules/localization/conf/localization.conf"
         readers: [
           {
-            channel: "/apollo/sensor/lidar128/compensator/PointCloud2"
+            channel: "/apollo/sensor/lidar/compensator/PointCloud2"
           }
         ]
       }

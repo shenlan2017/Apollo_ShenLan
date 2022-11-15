@@ -97,7 +97,6 @@ bool TrafficLightCameraPerception::Perception(
     AERROR << "tl failed to detect.";
     return false;
   }
-
   TrafficLightDetectorOptions recognizer_options;
   if (!recognizer_->Detect(recognizer_options, frame)) {
     AERROR << "tl failed to recognize.";
