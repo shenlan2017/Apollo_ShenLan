@@ -161,7 +161,7 @@ class ShenLanBackEndComponent final : public apollo::cyber::TimerComponent {
  private:
   std::string lidar_extrinsics_file =
       "/apollo/modules/calibration/data/dev_kit_pix_hooke/lidar_params/"
-      "lidar16_novatel_extrinsics.yaml";
+      "lidar_novatel_extrinsics.yaml";
 
   std::shared_ptr<cyber::Reader<drivers::PointCloud>> lidar_listener_ = nullptr;
   std::string lidar_topic_ = "/apollo/sensor/lidar/PointCloud2";

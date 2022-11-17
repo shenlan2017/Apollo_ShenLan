@@ -7,11 +7,11 @@ header:
 child_frame_id: lidar
 transform:
   rotation:
-    x: 0.0
-    y: 0.0
-    z: 0.715961
-    w: 0.69814
+    x: 1.15323e-05
+    y: 1.15323e-05
+    z: 0.678336
+    w: 0.734752
   translation:
-    x: 0.09
-    y: 0.0
-    z: 0.72
+    x: 0.109569
+    y: -0.170383
+    z: 0.75

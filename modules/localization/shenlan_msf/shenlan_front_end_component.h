@@ -136,7 +136,7 @@ class ShenLanFrontEndComponent final : public apollo::cyber::TimerComponent {
 
   std::string lidar_extrinsics_file =
       "/apollo/modules/calibration/data/dev_kit_pix_hooke/lidar_params/"
-      "lidar16_novatel_extrinsics.yaml";
+      "lidar_novatel_extrinsics.yaml";
 
  private:
   std::thread front_end_loop;

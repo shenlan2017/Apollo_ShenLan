@@ -1,5 +1,5 @@
 #! /bin/bash
-# bash ./scripts/msf_simple_map_creator.sh /apollo/data/bag/2022-01-13-18-40-25 /apollo/modules/calibration/data/dev_kit_pix_compitiion/lidar_params/lidar16_novatel_extrinsics.yaml 50 /apollo/modules/map/data/Pix_map/local_map lidar16
+# bash ./scripts/msf_simple_map_creator.sh /apollo/data/bag/2022-01-13-18-40-25 /apollo/modules/calibration/data/dev_kit_pix_compitiion/lidar_params/lidar_novatel_extrinsics.yaml 50 /apollo/modules/map/data/Pix_map/local_map lidar16
 if [ $# -lt 4 ]; then
   echo "Usage: msf_simple_map_creator.sh [records folder] [extrinsic_file] [zone_id] [map folder] [lidar_type]"
   exit 1

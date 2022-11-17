@@ -32,7 +32,7 @@ load("//third_party/sqlite3:workspace.bzl", sqlite3 = "repo")
 load("//third_party/tinyxml2:workspace.bzl", tinyxml2 = "repo")
 load("//third_party/uuid:workspace.bzl", uuid = "repo")
 load("//third_party/yaml_cpp:workspace.bzl", yaml_cpp = "repo")
-# load("//third_party/glew:workspace.bzl", glew = "repo")
+load("//third_party/glew:workspace.bzl", glew = "repo")
 
 load("//third_party/gpus:cuda_configure.bzl", "cuda_configure")
 load("//third_party/py:python_configure.bzl", "python_configure")
@@ -44,7 +44,7 @@ load("//third_party/pcl:pcl_configure.bzl", "pcl_configure")
 load("//third_party/ceres:workspace.bzl", ceres = "repo")
 load("//third_party/sophus:workspace.bzl", sophus = "repo")
 load("//third_party/rs_driver:workspace.bzl", rs_driver = "repo")
-
+load("//third_party/geographiclib:workspace.bzl", geographiclib = "repo")
 
 def initialize_third_party():
     """ Load third party repositories.  See above load() statements. """
@@ -64,6 +64,7 @@ def initialize_third_party():
     fftw3()
     gflags()
     glog()
+    glew()
     gtest()
     ipopt()
     libtorch_cpu()
@@ -87,6 +88,7 @@ def initialize_third_party():
     ceres()
     sophus()
     rs_driver()
+    geographiclib()
 
 # Define all external repositories required by
 def apollo_repositories():
