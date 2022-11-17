@@ -1,0 +1,15 @@
+# if true, initialize the origin via GNSS raw data
+# if false, initialize the origin via saved data from mapping
+is_mapping: true
+
+# from lidar frame to imu frame
+# for UrbanNav-HK-Data20190428
+T_imu_lidar: [ 1, 0, 0, 0,
+           0, 1, 0, 0,
+           0, 0, 1, 0, 
+           0, 0, 0, 1]
+# for UrbanNav-HK-Data20200314
+# T_imu_lidar: [ 2.67949e-08, -1,  0, 0,
+#            1,  2.67949e-08,  0, 0,
+#            0,  0,  1, -0.28, 
+#            0., 0., 0., 1]
