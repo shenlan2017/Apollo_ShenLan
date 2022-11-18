@@ -32,15 +32,15 @@ cc_library(
     ],
 )
 
-cc_test(
-    name = "websocket_handler_test",
-    size = "small",
-    srcs = ["websocket_handler_test.cc"],
-    deps = [
-        ":websocket_handler",
-        "//cyber",
-        "@com_google_googletest//:gtest_main",
-    ],
-)
+# cc_test(
+#     name = "websocket_handler_test",
+#     size = "small",
+#     srcs = ["websocket_handler_test.cc"],
+#     deps = [
+#         ":websocket_handler",
+#         "//cyber",
+#         "@com_google_googletest//:gtest_main",
+#     ],
+# )
 
 cpplint()

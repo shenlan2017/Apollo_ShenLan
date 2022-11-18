@@ -1,17 +1,17 @@
 header:
   seq: 0
+  frame_id: lidar
   stamp:
-    secs: 0
     nsecs: 0
-  frame_id: velodyne128
+    secs: 0
 child_frame_id: front_6mm
 transform:
-  translation:
-    x: -0.09
-    y: 0
-    z: -0.612
   rotation:
-    x: -0.5
-    y: 0.5
-    z: -0.5
-    w: 0.5
+    x: 0.495442
+    y: -0.504517
+    z: 0.504517
+    w: -0.495442
+  translation:
+    x: 0.170619
+    y: 0.0582165
+    z: -0.24

@@ -1366,12 +1366,12 @@ void Visualizer::ShowResult_all_info_single_camera(
     const cv::Mat &img, const CameraFrame &frame,
     const base::MotionBufferPtr motion_buffer,
     const Eigen::Affine3d &world2camera) {
-  if (frame.timestamp - last_timestamp_ < 0.02) return;
+  //if (frame.timestamp - last_timestamp_ < 0.02) return;
 
   world_image_ = cv::Mat(world_h_, wide_pixel_, CV_8UC3, black_color);
-  if (frame.data_provider->sensor_name() == "front_6mm") {
-    cv::imwrite("./test.png", img);
-  }
+  //if (frame.data_provider->sensor_name() == "front_6mm") {
+  //  cv::imwrite("./test.png", img);
+  //}
   // draw results on visulization panel
   int line_pos = 0;
   cv::Mat image = img.clone();
@@ -1461,21 +1461,21 @@ void Visualizer::ShowResult_all_info_single_camera(
             bigimg(cv::Rect(0, small_h_, small_w_, small_h_)));
         world_image_.copyTo(
             bigimg(cv::Rect(small_w_, 0, wide_pixel_, world_h_)));
-        // cv::namedWindow("Apollo Visualizer", CV_WINDOW_NORMAL);
-        // cv::setWindowProperty("Apollo Visualizer", CV_WND_PROP_FULLSCREEN,
-        //                       CV_WINDOW_FULLSCREEN);
-        // cv::imshow("Apollo Visualizer", bigimg);
-        // int key = cvWaitKey(30);
-        // key_handler(camera_name, key);
+            
+         cv::namedWindow("Apollo Visualizer", CV_WINDOW_NORMAL);
+        // cv::setWindowProperty("Apollo Visualizer", CV_WND_PROP_FULLSCREEN,CV_WINDOW_FULLSCREEN);
+         cv::imshow("Apollo Visualizer", bigimg);
+         int key = cvWaitKey(30);
+         key_handler(camera_name, key);
 
         // output visualization panel
-        if (write_out_img_) {
-          char path[1000];
-          static int k = 0;
-          snprintf(path, sizeof(path), "%s/%06d.jpg", path_.c_str(), k++);
-          AINFO << "snapshot is saved at " << path;
-          cv::imwrite(path, bigimg);
-        }
+        //if (write_out_img_) {
+        //  char path[1000];
+        //  static int k = 0;
+        //  snprintf(path, sizeof(path), "%s/%06d.jpg", path_.c_str(), k++);
+        //  AINFO << "snapshot is saved at " << path;
+        //  cv::imwrite(path, bigimg);
+        //}
         all_camera_recieved_ = 0x0;
       }  // if (camera_name == visual_camera)
     }    // if (all_camera_recieved_ == 0x3)
