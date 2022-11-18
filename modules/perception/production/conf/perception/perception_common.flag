@@ -50,6 +50,7 @@
 # default: false
 --start_visualizer=false
 
+
 ###########################################################################
 # Flags from transform_wrapper
 
@@ -89,6 +90,10 @@
 --obs_max_local_pose_extrapolation_latency=0.15
 
 --config_manager_path=./
+--start_visualizer=false
+--lidar_model_version=velodyne128
+
+--lidar_sensor_name=velodyne128
 
 ###########################################################################
 # Flags from lidar_point_pillars

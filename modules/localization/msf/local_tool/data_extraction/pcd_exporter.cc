@@ -61,8 +61,18 @@ void PCDExporter::CompensatedPcdCallback(const std::string &msg_string) {
 void PCDExporter::WritePcdFile(const std::string &filename,
                                const drivers::PointCloud &msg) {
   pcl::PointCloud<velodyne::PointXYZIT> cloud;
-  cloud.width = msg.width();
-  cloud.height = msg.height();
+  bool bsimulator = true;
+  if(bsimulator == true)
+  {
+    std::cout << "msg.size: "<< msg.point_size() << "msg.width() "<< msg.width()<< " msg.height() "<<msg.height()<< std::endl;
+    cloud.width = msg.point_size();
+    cloud.height = 1;
+  }
+  else{
+    cloud.width = msg.width();
+    cloud.height = msg.height();
+  }
+
   cloud.is_dense = false;
   cloud.points.resize(cloud.width * cloud.height);
 

@@ -49,9 +49,6 @@ bool SocketCanClientRaw::Init(const CANCardParameter &parameter) {
            << num_ports << ") !";
     return false;
   }
-  AINFO << "Socketcan client is initialized with cancard conf as: "
-        << parameter.ShortDebugString();
-
   return true;
 }
 

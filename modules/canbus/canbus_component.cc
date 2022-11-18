@@ -193,7 +193,6 @@ bool CanbusComponent::Proc() {
   if (FLAGS_enable_chassis_detail_pub) {
     PublishChassisDetail();
   }
-  can_sender_.Update_Heartbeat();
   return true;
 }
 

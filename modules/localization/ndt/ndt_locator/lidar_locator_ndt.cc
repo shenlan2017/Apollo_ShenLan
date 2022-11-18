@@ -101,6 +101,7 @@ void LidarLocatorNdt::LoadMap(const Eigen::Affine3d& init_location,
 }
 
 void LidarLocatorNdt::SetMapFolderPath(const std::string folder_path) {
+  std::cout << folder_path << std::endl;
   if (!map_.SetMapFolderPath(folder_path)) {
     AERROR << "Map folder is invalid!";
   }

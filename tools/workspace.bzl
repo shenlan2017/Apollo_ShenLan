@@ -40,6 +40,12 @@ load("//third_party/tensorrt:tensorrt_configure.bzl", "tensorrt_configure")
 load("//third_party/vtk:vtk_configure.bzl", "vtk_configure")
 load("//third_party/pcl:pcl_configure.bzl", "pcl_configure")
 
+# new add ceres
+load("//third_party/ceres:workspace.bzl", ceres = "repo")
+load("//third_party/sophus:workspace.bzl", sophus = "repo")
+load("//third_party/rs_driver:workspace.bzl", rs_driver = "repo")
+
+
 def initialize_third_party():
     """ Load third party repositories.  See above load() statements. """
 
@@ -77,6 +83,10 @@ def initialize_third_party():
     tinyxml2()
     uuid()
     yaml_cpp()
+
+    ceres()
+    sophus()
+    rs_driver()
 
 # Define all external repositories required by
 def apollo_repositories():

@@ -21,5 +21,6 @@ rm $DIR/result.csv
 for f in `ls ${1}/*_recorded.csv`
 do
     echo "Processing $f"
-    python -W ignore $DIR/process_data.py $f
+    # python -W ignore $DIR/process_data.py $f
+    ./bazel-bin/modules/tools/vehicle_calibration/process_data $f
 done

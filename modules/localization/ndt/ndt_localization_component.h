@@ -20,16 +20,17 @@
 #include <string>
 #include <vector>
 
+#include "modules/drivers/gnss/proto/ins.pb.h"
+#include "modules/drivers/proto/pointcloud.pb.h"
+#include "modules/localization/proto/gps.pb.h"
+#include "modules/localization/proto/imu.pb.h"
+#include "modules/localization/proto/localization.pb.h"
+
 #include "cyber/class_loader/class_loader.h"
 #include "cyber/component/component.h"
 #include "cyber/cyber.h"
 #include "cyber/message/raw_message.h"
-
-#include "modules/drivers/gnss/proto/ins.pb.h"
-#include "modules/drivers/proto/pointcloud.pb.h"
 #include "modules/localization/ndt/ndt_localization.h"
-#include "modules/localization/proto/gps.pb.h"
-#include "modules/localization/proto/localization.pb.h"
 #include "modules/transform/transform_broadcaster.h"
 
 namespace apollo {
@@ -53,6 +54,8 @@ class NDTLocalizationComponent final
   void LidarCallback(const std::shared_ptr<drivers::PointCloud> &lidar_msg);
   void OdometryStatusCallback(
       const std::shared_ptr<drivers::gnss::InsStat> &status_msg);
+  void ImuCallback(
+      const std::shared_ptr<localization::CorrectedImu> &imu_msg);
 
   void PublishPoseBroadcastTF(const LocalizationEstimate &localization);
   void PublishPoseBroadcastTopic(const LocalizationEstimate &localization);
@@ -61,6 +64,9 @@ class NDTLocalizationComponent final
       const LocalizationStatus &localization_status);
 
  private:
+  std::shared_ptr<cyber::Reader<localization::CorrectedImu>>
+      corrected_imu_listener_ = nullptr;
+
   std::shared_ptr<cyber::Reader<drivers::PointCloud>> lidar_listener_ = nullptr;
 
   std::shared_ptr<cyber::Reader<drivers::gnss::InsStat>>
@@ -75,6 +81,7 @@ class NDTLocalizationComponent final
   std::shared_ptr<cyber::Writer<LocalizationStatus>>
       localization_status_talker_ = nullptr;
 
+  std::string imu_topic_ = "";
   std::string lidar_topic_ = "";
   std::string odometry_topic_ = "";
   std::string localization_topic_ = "";

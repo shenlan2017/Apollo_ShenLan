@@ -48,9 +48,6 @@ bool HermesCanClient::Init(const CANCardParameter &parameter) {
            << num_ports << ")";
     return false;
   }
-  baudrate_ = parameter.hermes_baudrate();
-  AINFO << "Hermescan client is initialized with cancard conf as: "
-        << parameter.ShortDebugString();
 
   return true;
 }
@@ -72,8 +69,8 @@ ErrorCode HermesCanClient::Start() {
   }
   AINFO << "Open device success, channel id: " << port_;
 
-  // 1. set baudrate
-  ret = bcan_set_baudrate(dev_handler_, baudrate_);
+  // 1. set baudrate to 500k
+  ret = bcan_set_baudrate(dev_handler_, BCAN_BAUDRATE_500K);
   if (ret != ErrorCode::OK) {
     AERROR << "Set baudrate error Code: " << ret;
     return ErrorCode::CAN_CLIENT_ERROR_BASE;

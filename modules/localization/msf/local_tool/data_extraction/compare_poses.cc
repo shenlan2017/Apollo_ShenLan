@@ -17,6 +17,7 @@
 #include <fstream>
 #include <iomanip>
 
+#include <Eigen/StdVector>
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
@@ -26,7 +27,6 @@
 
 #include "cyber/common/log.h"
 #include "modules/common/math/quaternion.h"
-
 #include "modules/localization/msf/common/io/velodyne_utility.h"
 
 using ::apollo::common::EigenAffine3dVec;
@@ -55,7 +55,10 @@ static void PoseAndStdInterpolationByTime(
     const EigenAffine3dVec &in_poses, const EigenVector3dVec &in_stds,
     const std::vector<double> &in_timestamps,
     const std::vector<double> &ref_timestamps,
-    std::map<unsigned int, Eigen::Affine3d> *out_poses,
+    std::map<
+        unsigned int, Eigen::Affine3d, std::less<unsigned int>,
+        Eigen::aligned_allocator<std::pair<unsigned int, Eigen::Affine3d>>>
+        *out_poses,
     std::map<unsigned int, Eigen::Vector3d> *out_stds) {
   unsigned int index = 0;
   for (size_t i = 0; i < ref_timestamps.size(); ++i) {
@@ -168,9 +171,13 @@ int main(int argc, char **argv) {
     return 0;
   }
 
-  std::map<unsigned int, Eigen::Affine3d> out_poses_a;
+  std::map<unsigned int, Eigen::Affine3d, std::less<unsigned int>,
+           Eigen::aligned_allocator<std::pair<unsigned int, Eigen::Affine3d>>>
+      out_poses_a;
   std::map<unsigned int, Eigen::Vector3d> out_stds_a;
-  std::map<unsigned int, Eigen::Affine3d> out_poses_b;
+  std::map<unsigned int, Eigen::Affine3d, std::less<unsigned int>,
+           Eigen::aligned_allocator<std::pair<unsigned int, Eigen::Affine3d>>>
+      out_poses_b;
   std::map<unsigned int, Eigen::Vector3d> out_stds_b;
 
   PoseAndStdInterpolationByTime(poses_b, stds_b, timestamps_b, timestamps_a,

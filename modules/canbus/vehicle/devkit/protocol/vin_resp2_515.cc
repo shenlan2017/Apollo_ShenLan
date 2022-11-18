@@ -16,10 +16,7 @@
 
 #include "modules/canbus/vehicle/devkit/protocol/vin_resp2_515.h"
 
-#include <string>
-
 #include "glog/logging.h"
-
 #include "modules/drivers/canbus/common/byte.h"
 #include "modules/drivers/canbus/common/canbus_consts.h"
 
@@ -55,104 +52,88 @@ void Vinresp2515::Parse(const std::uint8_t* bytes, int32_t length,
 // config detail: {'bit': 63, 'is_signed_var': False, 'len': 8, 'name': 'vin15',
 // 'offset': 0.0, 'order': 'motorola', 'physical_range': '[0|255]',
 // 'physical_unit': '', 'precision': 1.0, 'type': 'int'}
-std::string Vinresp2515::vin15(const std::uint8_t* bytes,
-                               int32_t length) const {
+int Vinresp2515::vin15(const std::uint8_t* bytes, int32_t length) const {
   Byte t0(bytes + 7);
   int32_t x = t0.get_byte(0, 8);
 
-  std::string ret = "";
-  ret += x;
+  int ret = x;
   return ret;
 }
 
 // config detail: {'bit': 55, 'is_signed_var': False, 'len': 8, 'name': 'vin14',
 // 'offset': 0.0, 'order': 'motorola', 'physical_range': '[0|255]',
 // 'physical_unit': '', 'precision': 1.0, 'type': 'int'}
-std::string Vinresp2515::vin14(const std::uint8_t* bytes,
-                               int32_t length) const {
+int Vinresp2515::vin14(const std::uint8_t* bytes, int32_t length) const {
   Byte t0(bytes + 6);
   int32_t x = t0.get_byte(0, 8);
 
-  std::string ret = "";
-  ret += x;
+  int ret = x;
   return ret;
 }
 
 // config detail: {'bit': 47, 'is_signed_var': False, 'len': 8, 'name': 'vin13',
 // 'offset': 0.0, 'order': 'motorola', 'physical_range': '[0|255]',
 // 'physical_unit': '', 'precision': 1.0, 'type': 'int'}
-std::string Vinresp2515::vin13(const std::uint8_t* bytes,
-                               int32_t length) const {
+int Vinresp2515::vin13(const std::uint8_t* bytes, int32_t length) const {
   Byte t0(bytes + 5);
   int32_t x = t0.get_byte(0, 8);
 
-  std::string ret = "";
-  ret += x;
+  int ret = x;
   return ret;
 }
 
 // config detail: {'bit': 39, 'is_signed_var': False, 'len': 8, 'name': 'vin12',
 // 'offset': 0.0, 'order': 'motorola', 'physical_range': '[0|255]',
 // 'physical_unit': '', 'precision': 1.0, 'type': 'int'}
-std::string Vinresp2515::vin12(const std::uint8_t* bytes,
-                               int32_t length) const {
+int Vinresp2515::vin12(const std::uint8_t* bytes, int32_t length) const {
   Byte t0(bytes + 4);
   int32_t x = t0.get_byte(0, 8);
 
-  std::string ret = "";
-  ret += x;
+  int ret = x;
   return ret;
 }
 
 // config detail: {'bit': 31, 'is_signed_var': False, 'len': 8, 'name': 'vin11',
 // 'offset': 0.0, 'order': 'motorola', 'physical_range': '[0|255]',
 // 'physical_unit': '', 'precision': 1.0, 'type': 'int'}
-std::string Vinresp2515::vin11(const std::uint8_t* bytes,
-                               int32_t length) const {
+int Vinresp2515::vin11(const std::uint8_t* bytes, int32_t length) const {
   Byte t0(bytes + 3);
   int32_t x = t0.get_byte(0, 8);
 
-  std::string ret = "";
-  ret += x;
+  int ret = x;
   return ret;
 }
 
 // config detail: {'bit': 23, 'is_signed_var': False, 'len': 8, 'name': 'vin10',
 // 'offset': 0.0, 'order': 'motorola', 'physical_range': '[0|255]',
 // 'physical_unit': '', 'precision': 1.0, 'type': 'int'}
-std::string Vinresp2515::vin10(const std::uint8_t* bytes,
-                               int32_t length) const {
+int Vinresp2515::vin10(const std::uint8_t* bytes, int32_t length) const {
   Byte t0(bytes + 2);
   int32_t x = t0.get_byte(0, 8);
 
-  std::string ret = "";
-  ret += x;
+  int ret = x;
   return ret;
 }
 
 // config detail: {'bit': 15, 'is_signed_var': False, 'len': 8, 'name': 'vin09',
 // 'offset': 0.0, 'order': 'motorola', 'physical_range': '[0|255]',
 // 'physical_unit': '', 'precision': 1.0, 'type': 'int'}
-std::string Vinresp2515::vin09(const std::uint8_t* bytes,
-                               int32_t length) const {
+int Vinresp2515::vin09(const std::uint8_t* bytes, int32_t length) const {
   Byte t0(bytes + 1);
   int32_t x = t0.get_byte(0, 8);
 
-  std::string ret = "";
-  ret += x;
+  int ret = x;
   return ret;
 }
 
 // config detail: {'bit': 7, 'is_signed_var': False, 'len': 8, 'name': 'vin08',
 // 'offset': 0.0, 'order': 'motorola', 'physical_range': '[0|255]',
 // 'physical_unit': '', 'precision': 1.0, 'type': 'int'}
-std::string Vinresp2515::vin08(const std::uint8_t* bytes,
-                               int32_t length) const {
+int Vinresp2515::vin08(const std::uint8_t* bytes, int32_t length) const {
   Byte t0(bytes + 0);
   int32_t x = t0.get_byte(0, 8);
 
-  std::string ret = "";
-  ret += x;
+  int ret = x;
   return ret;
 }
 }  // namespace devkit

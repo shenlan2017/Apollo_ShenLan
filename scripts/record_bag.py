@@ -74,7 +74,7 @@ LARGE_TOPICS = [
     '/apollo/sensor/microphone',
     '/apollo/sensor/radar/front',
     '/apollo/sensor/radar/rear',
-    '/apollo/sensor/velodyne64/compensator/PointCloud2',
+    '/apollo/sensor/lidar128/compensator/PointCloud2',
 ]
 
 def shell_cmd(cmd, alert_on_failure=True):

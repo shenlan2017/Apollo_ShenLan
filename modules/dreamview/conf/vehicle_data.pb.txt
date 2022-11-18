@@ -99,6 +99,10 @@ data_files {
   dest_path: "/apollo/modules/drivers/camera/dag"
 }
 data_files {
+  source_path: "camera_launch"
+  dest_path: "/apollo/modules/drivers/camera/launch"
+}
+data_files {
   source_path: "video_conf"
   dest_path: "/apollo/modules/drivers/video/conf"
 }
@@ -165,6 +169,10 @@ data_files {
 data_files {
   source_path: "lidar_dag"
   dest_path: "/apollo/modules/drivers/lidar/dag"
+}
+data_files {
+  source_path: "lidar_launch"
+  dest_path: "/apollo/modules/drivers/lidar/launch"
 }
 data_files {
   source_path: "lidar_conf"

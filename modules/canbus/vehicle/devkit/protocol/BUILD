@@ -11,6 +11,9 @@ cc_library(
         ":bms_report_512",
         ":brake_command_101",
         ":brake_report_501",
+        ":chassiserrorcode_200",
+        ":chassiserrorcode_1_201",
+        ":chassiserrorcode_2_202",
         ":gear_command_103",
         ":gear_report_503",
         ":park_command_104",
@@ -96,6 +99,42 @@ cc_test(
     deps = [
         "//modules/canbus/vehicle/devkit/protocol:canbus_devkit_protocol",
         "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "chassiserrorcode_200",
+    srcs = ["chassiserrorcode_200.cc"],
+    hdrs = ["chassiserrorcode_200.h"],
+    copts = CANBUS_COPTS,
+    deps = [
+        "//modules/canbus/proto:chassis_detail_cc_proto",
+        "//modules/drivers/canbus/can_comm:message_manager_base",
+        "//modules/drivers/canbus/common:canbus_common",
+    ],
+)
+
+cc_library(
+    name = "chassiserrorcode_1_201",
+    srcs = ["chassiserrorcode_1_201.cc"],
+    hdrs = ["chassiserrorcode_1_201.h"],
+    copts = CANBUS_COPTS,
+    deps = [
+        "//modules/canbus/proto:chassis_detail_cc_proto",
+        "//modules/drivers/canbus/can_comm:message_manager_base",
+        "//modules/drivers/canbus/common:canbus_common",
+    ],
+)
+
+cc_library(
+    name = "chassiserrorcode_2_202",
+    srcs = ["chassiserrorcode_2_202.cc"],
+    hdrs = ["chassiserrorcode_2_202.h"],
+    copts = CANBUS_COPTS,
+    deps = [
+        "//modules/canbus/proto:chassis_detail_cc_proto",
+        "//modules/drivers/canbus/can_comm:message_manager_base",
+        "//modules/drivers/canbus/common:canbus_common",
     ],
 )
 
