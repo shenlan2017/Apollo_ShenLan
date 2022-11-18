@@ -16,14 +16,14 @@
 # limitations under the License.
 ###############################################################################
 
-pcd_path="./data/files/"
-pose_path="./data/poses/"
+pcd_path="/apollo/modules/map/data/calibration/parsed_data/00000/pcd"
+pose_path="/apollo/modules/map/data/calibration/parsed_data/00000/pcd/corrected_poses.txt "
+work_path="/apollo/modules/perception/production"
 output_path="./result_output/"
 
 mkdir -p $output_path && rm -rf $output_path/*
 
-./offline_lidar_obstacle_perception \
-        --work_root=./ \
+./offline_map_obstacle_segmentor \
         --pcd_path=$pcd_path \
         --pose_path=$pose_path \
         --output_path=$output_path \

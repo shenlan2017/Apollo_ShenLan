@@ -1,0 +1,1 @@
+run_offline_lidar_obstacle_perception.sh: line 27: ./offline_map_obstacle_segmentor: No such file or directory
