@@ -1,0 +1,34 @@
+extrinsic_file {
+    frame_id: "novatel"
+    child_frame_id: "lidar"
+    file_path: "/apollo/modules/drivers/lidar/velodyne/params/lidar_novatel_extrinsics.yaml"
+    enable: true
+}
+
+extrinsic_file {
+    frame_id: "localization"
+    child_frame_id: "novatel"
+    file_path: "/apollo/modules/calibration/data/dev_kit_pix_hooke/novatel_localization_extrinsics.yaml"
+    enable: true
+}
+
+extrinsic_file {
+    frame_id: "lidar"
+    child_frame_id: "front_6mm"
+    file_path: "/apollo/modules/calibration/data/dev_kit_pix_hooke/camera_params/front_6mm_extrinsics.yaml"
+    enable: true
+}
+
+extrinsic_file {
+    frame_id: "lidar"
+    child_frame_id: "front_12mm"
+    file_path: "/apollo/modules/calibration/data/dev_kit_pix_hooke/camera_params/front_12mm_extrinsics.yaml"
+    enable: true
+}
+
+extrinsic_file {
+    frame_id: "lidar"
+    child_frame_id: "radar_front"
+    file_path: "/apollo/modules/calibration/data/dev_kit_pix_hooke/radar_params/radar_front_extrinsics.yaml"
+    enable: true
+}
