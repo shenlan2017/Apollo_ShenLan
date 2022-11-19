@@ -165,6 +165,26 @@ py_proto_library(
 )
 
 cc_proto_library(
+    name = "shenlan_config_cc_proto",
+    deps = [
+        ":shenlan_config_proto",
+    ]
+)
+
+proto_library(
+    name = "shenlan_config_proto",
+    srcs = [":shenlan_config.proto"],
+
+)
+
+py_proto_library(
+    name = "shenlan_config_py_pb2",
+    deps = [
+        ":shenlan_config_proto",
+    ]
+)
+
+cc_proto_library(
     name = "gps_cc_proto",
     deps = [
         ":gps_proto",

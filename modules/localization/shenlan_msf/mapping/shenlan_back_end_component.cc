@@ -14,7 +14,7 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/localization/shenlan_msf/shenlan_back_end_component.h"
+#include "modules/localization/shenlan_msf/mapping/shenlan_back_end_component.h"
 
 #include "cyber/time/clock.h"
 #include "modules/common/adapters/adapter_gflags.h"
@@ -71,6 +71,24 @@ bool ShenLanBackEndComponent::InitConfig() {
     AERROR << "Init publisher config failed.";
     return false;
   }
+
+  shenlan_config::Config mapping_config;
+  if (!apollo::cyber::common::GetProtoFromFile(
+          "/apollo/modules/localization/conf/shenlan_localization.pb.txt",
+          &mapping_config)) {
+    return false;
+  }
+  AINFO << "ShenLan Mapping Config: " << mapping_config.DebugString();
+
+  lidar_extrinsics_file = mapping_config.lidar_extrinsics_path();
+  lidar_topic_ = mapping_config.lidar_topic();
+  gnss_pose_topic_ = mapping_config.odometry_gnss_topic();
+  lidar_pose_topic_ = mapping_config.lidar_pose_topic();
+  chassis_topic_ = mapping_config.chassis_topic();
+  raw_imu_topic_ = mapping_config.imu_topic();
+  loop_closing_topic_ = mapping_config.loop_closing_topic();
+
+
   const std::string config_file_path =
       WORK_SPACE_PATH + "/config/mapping/shenlan_lio_back_end.yaml";
 
@@ -84,7 +102,6 @@ bool ShenLanBackEndComponent::InitConfig() {
   if (!tools->LoadLidarExtrinsic(lidar_extrinsics_file, &lidar_extrinsic)) {
     AERROR << "Fail to Load Lidar Extrinsic!";
   }
-
   return true;
 }
 
@@ -471,13 +488,17 @@ MsgPublisher::MsgPublisher(const std::shared_ptr<cyber::Node>& node)
     : node_(node), tf2_broadcaster_(node) {}
 
 bool MsgPublisher::InitConfig() {
-  localization_topic_ = "/apollo/localization/pose";
-  broadcast_tf_frame_id_ = "world";
-  broadcast_tf_child_frame_id_ = "localization";
-  // lidar_local_topic_ = FLAGS_localization_lidar_topic;
-  // gnss_local_topic_ = FLAGS_localization_gnss_topic;
-  localization_status_topic_ = "/apollo/localization/shenlan_msf_status";
-
+  shenlan_config::Config mapping_config;
+  if (!apollo::cyber::common::GetProtoFromFile(
+          "/apollo/modules/localization/conf/shenlan_localization.pb.txt",
+          &mapping_config)) {
+    return false;
+  }
+  AINFO << "ShenLan Mapping Config: " << mapping_config.DebugString();
+  localization_topic_ = mapping_config.localization_topic();
+  localization_status_topic_ = mapping_config.localization_status_topic();
+  broadcast_tf_frame_id_ = mapping_config.broadcast_tf_frame_id();
+  broadcast_tf_child_frame_id_ = mapping_config.broadcast_tf_child_frame_id();
   return true;
 }
 
