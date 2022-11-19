@@ -1,9 +1,9 @@
 #pragma once
 
+#include <iomanip>
 #include <memory>
 #include <string>
 #include <vector>
-#include <iomanip>
 
 #include <pangolin/pangolin.h>
 #include <pcl/filters/voxel_grid.h>
@@ -12,7 +12,7 @@
 
 #include "modules/drivers/proto/pointcloud.pb.h"
 #include "modules/localization/proto/localization.pb.h"
-#include "modules/localization/msf/local_tool/local_visualization/engine/visualization_manager.h"
+#include "modules/localization/proto/shenlan_config.pb.h"
 #include "modules/localization/shenlan_msf/visualization/pangolin_visualizer.h"
 
 using namespace lidar_localization;
@@ -77,15 +77,15 @@ class PangolinVisualizerComponent final
 
   std::shared_ptr<cyber::Reader<LocalizationEstimate>> lidar_local_listener_ =
       nullptr;
-  std::string lidar_local_topic_ = "/apollo/localization/shenlan_msf_lidar";
+  std::string lidar_local_topic_ = "";
 
   std::shared_ptr<cyber::Reader<LocalizationEstimate>> gnss_local_listener_ =
       nullptr;
-  std::string gnss_local_topic_ = "/apollo/localization/shenlan_msf_gnss";
+  std::string gnss_local_topic_ = "";
 
   std::shared_ptr<cyber::Reader<LocalizationEstimate>> fusion_local_listener_ =
       nullptr;
-  std::string fusion_local_topic_ = "/apollo/localization/pose";
+  std::string fusion_local_topic_ = "";
 };
 
 CYBER_REGISTER_COMPONENT(PangolinVisualizerComponent);

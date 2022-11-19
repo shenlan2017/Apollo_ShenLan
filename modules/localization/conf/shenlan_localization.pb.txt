@@ -10,7 +10,7 @@ chassis_topic: "/apollo/canbus/chassis"
 lidar_extrinsics_path: "/apollo/modules/calibration/data/dev_kit_pix_hooke/lidar_params/lidar_novatel_extrinsics.yaml"
 synch_imu_topic: "/apollo/synch/imu"
 synch_posvel_topic: "/apollo/synch/posvel"
-lidar_trans_topic: "/apollo/sensor/lidar/transform/compensator/PointCloud2"
+lidar_trans_topic: "/apollo/sensor/lidar/transform/PointCloud2"
 is_mapping: true
 lidar_pose_topic: "/apollo/localization/shenlan_msf_lidar"
 odometry_gnss_topic: "/apollo/localization/shenlan_msf_gnss"

@@ -5,53 +5,30 @@ load("//tools:cpplint.bzl", "cpplint")
 package(default_visibility = ["//visibility:public"])
 
 cc_binary(
+    name = "libshenlan_mapping_component.so",
+    linkshared = True,
+    linkstatic = False,
+    deps = [
+        ":shenlan_msf_front_end_component",
+        ":shenlan_msf_back_end_component",
+        ":shenlan_msf_loop_closing_component",
+    ],
+)
+
+cc_binary(
     name = "libshenlan_localization_component.so",
     linkshared = True,
     linkstatic = False,
     deps = [
-        ":shenlan_msf_front_end_component_lib",
-        ":shenlan_msf_back_end_component_lib",
-        ":shenlan_msf_loop_closing_component_lib",
+        ":shenlan_msf_filtering_component",
+        ":shenlan_msf_pretreat_component",
     ],
-)
-
-cc_library(
-    name = "shenlan_msf_front_end_component_lib",
-    copts = [
-        '-DMODULE_NAME=\\"localization\\"',
-    ],
-    deps = [
-        ":shenlan_front_end_component",
-    ],
-    alwayslink = True,
-)
-
-
-cc_library(
-    name = "shenlan_msf_back_end_component_lib",
-    copts = [
-        '-DMODULE_NAME=\\"localization\\"',
-    ],
-    deps = [
-        ":shenlan_back_end_component",
-    ],
-    alwayslink = True,
-)
-
-cc_library(
-    name = "shenlan_msf_loop_closing_component_lib",
-    copts = [
-        '-DMODULE_NAME=\\"localization\\"',
-    ],
-    deps = [
-        ":shenlan_loop_closing_component",
-    ],
-    alwayslink = True,
 )
 
 install(
     name = "install",
     targets = [
+        ":libshenlan_mapping_component.so",
         ":libshenlan_localization_component.so",
     ],
 )
@@ -62,6 +39,7 @@ COMMON_DEPS = [
     "//cyber/common:time_conversion",
     "//modules/common/util:time_util",
     "//modules/common/adapters:adapter_gflags",
+    "//modules/localization/proto:gnss_pnt_result_cc_proto",
     "//modules/common/math",
     "//modules/common/monitor_log",
     "//modules/common/proto:geometry_cc_proto",
@@ -84,13 +62,13 @@ COMMON_DEPS = [
     "//modules/localization/proto:sins_pva_cc_proto",
     "//modules/transform:transform_broadcaster",
     "//modules/localization/msf/common/util",
-    # "//modules/localization/msf/local_integ",
     "//modules/localization/shenlan_msf/core:pre_integrator",
     "//modules/localization/shenlan_msf/core:registration",
     "//modules/localization/shenlan_msf/core:cloud_filter",
     "//modules/localization/shenlan_msf/core:sensor_data",
     "//modules/localization/shenlan_msf/core:sliding_window",
     "//modules/localization/shenlan_msf/core:graph_optimizer",
+    "//modules/localization/shenlan_msf/core:kalman_filter",
     "//modules/localization/shenlan_msf/interface",
     "@boost",
     "@geographiclib",
@@ -103,7 +81,7 @@ COMMON_DEPS = [
 
 
 cc_library(
-    name = "shenlan_front_end_component",
+    name = "shenlan_msf_front_end_component",
     srcs = [
         "mapping/shenlan_front_end_component.cc",
     ],
@@ -117,7 +95,7 @@ cc_library(
 )
 
 cc_library(
-    name = "shenlan_back_end_component",
+    name = "shenlan_msf_back_end_component",
     srcs = [
         "mapping/shenlan_back_end_component.cc",
     ],
@@ -131,7 +109,7 @@ cc_library(
 )
 
 cc_library(
-    name = "shenlan_loop_closing_component",
+    name = "shenlan_msf_loop_closing_component",
     srcs = [
         "mapping/shenlan_loop_closing_component.cc",
     ],
@@ -143,4 +121,34 @@ cc_library(
     ],
     deps = COMMON_DEPS,
 )
+
+
+cc_library(
+    name = "shenlan_msf_filtering_component",
+    srcs = [
+        "localization/shenlan_filtering_component.cc",
+    ],
+    hdrs = [
+        "localization/shenlan_filtering_component.h",
+    ],
+    copts = [
+        "-DMODULE_NAME=\\\"localization\\\"",
+    ],
+    deps = COMMON_DEPS,
+)
+
+cc_library(
+    name = "shenlan_msf_pretreat_component",
+    srcs = [
+        "localization/shenlan_pretreat_component.cc",
+    ],
+    hdrs = [
+        "localization/shenlan_pretreat_component.h",
+    ],
+    copts = [
+        "-DMODULE_NAME=\\\"localization\\\"",
+    ],
+    deps = COMMON_DEPS,
+)
+
 cpplint()

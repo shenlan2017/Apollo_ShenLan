@@ -23,6 +23,11 @@
 
 #include "Eigen/Core"
 #include "Eigen/Geometry"
+#include "lidar_localization/sensor_data/cloud_data.h"
+#include "lidar_localization/sensor_data/gnss_data.h"
+#include "lidar_localization/sensor_data/imu_data.h"
+#include "lidar_localization/sensor_data/pose_data.h"
+#include "lidar_localization/sensor_data/velocity_data.h"
 #include "yaml-cpp/yaml.h"
 
 #include "modules/canbus/proto/chassis.pb.h"
@@ -44,6 +49,7 @@
 #include "cyber/cyber.h"
 #include "cyber/message/raw_message.h"
 #include "cyber/time/clock.h"
+#include "modules/common/adapters/adapter_gflags.h"
 #include "modules/common/configs/config_gflags.h"
 #include "modules/common/math/euler_angles_zxy.h"
 #include "modules/common/math/math_utils.h"
@@ -52,18 +58,11 @@
 #include "modules/common/status/status.h"
 #include "modules/common/util/time_util.h"
 #include "modules/localization/common/localization_gflags.h"
-#include "modules/transform/transform_broadcaster.h"
-// #include "modules/localization/msf/local_integ/localization_params.h"
-#include "lidar_localization/sensor_data/cloud_data.h"
-#include "lidar_localization/sensor_data/gnss_data.h"
-#include "lidar_localization/sensor_data/imu_data.h"
-#include "lidar_localization/sensor_data/pose_data.h"
-#include "lidar_localization/sensor_data/velocity_data.h"
-
 #include "modules/localization/shenlan_msf/interface/back_end.h"
 #include "modules/localization/shenlan_msf/interface/loop_closing.h"
 #include "modules/localization/shenlan_msf/interface/msg_transfer.h"
 #include "modules/localization/shenlan_msf/interface/post_processing.h"
+#include "modules/transform/transform_broadcaster.h"
 
 using namespace lidar_localization;
 

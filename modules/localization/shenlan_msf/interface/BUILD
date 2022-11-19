@@ -12,6 +12,7 @@ cc_library(
         "post_processing.cc",
         "loop_closing.cc",
         "msg_transfer.cc",
+        "filtering.cc",
     ],
     hdrs = [
         "front_end.h",
@@ -19,6 +20,7 @@ cc_library(
         "post_processing.h",
         "loop_closing.h",
         "msg_transfer.h",
+        "filtering.h"
     ],
     deps = [
         "@boost",
@@ -36,6 +38,7 @@ cc_library(
         "//modules/localization/shenlan_msf/core:sensor_data",
         "//modules/localization/shenlan_msf/core:sliding_window",
         "//modules/localization/shenlan_msf/core:graph_optimizer",
+        "//modules/localization/shenlan_msf/core:kalman_filter",
         "//modules/drivers/gnss/proto:config_cc_proto",
         "//modules/drivers/gnss/proto:imu_cc_proto",
         "//modules/drivers/gnss/proto:gnss_best_pose_cc_proto",

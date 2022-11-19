@@ -47,12 +47,17 @@ bool PangolinVisualizerComponent::Init() {
 }
 
 bool PangolinVisualizerComponent::InitConfig() {
+  shenlan_config::Config visualizer_config;
+  if (!apollo::cyber::common::GetProtoFromFile(config_file_path_,
+                                               &visualizer_config)) {
+    return false;
+  }
+
+  lidar_extrinsic_file_ = visualizer_config.lidar_extrinsics_path();
+  fusion_local_topic_ = visualizer_config.localization_topic();
+  gnss_local_topic_ = visualizer_config.odometry_gnss_topic();
+  lidar_local_topic_ = visualizer_config.lidar_pose_topic();
   // map_folder_ = FLAGS_map_dir + "/" + FLAGS_local_map_name;
-  lidar_extrinsic_file_ = FLAGS_lidar_extrinsics_file;
-  // lidar_local_topic_ = FLAGS_localization_lidar_topic;
-  // gnss_local_topic_ = FLAGS_localization_gnss_topic;
-  // fusion_local_topic_ = FLAGS_localization_topic;
-  std::cout << "lidar_extrinsic_file_" << lidar_extrinsic_file_<< std::endl;
   bool success =
       msf::velodyne::LoadExtrinsic(lidar_extrinsic_file_, &velodyne_extrinsic);
   if (!success) {

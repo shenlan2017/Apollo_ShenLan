@@ -6,7 +6,7 @@ module_config {
       class_name : "PangolinVisualizerComponent"
       config {
         name : "msf_visualizer"
-        flag_file_path : "/apollo/modules/localization/conf/localization.conf"
+        config_file_path : "/apollo/modules/localization/conf/shenlan_localization.pb.txt"
         readers: [
           {
             channel: "/apollo/sensor/lidar/PointCloud2"
