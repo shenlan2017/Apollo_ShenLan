@@ -195,33 +195,33 @@ cc_library(
     include_prefix = "modules/localization/shenlan_msf/core/",
 )
 
-# cc_library(
-#     name = "kalman_filter",
-#     srcs = glob([
-#         "src/models/kalman_filter/*.cpp",
-#         "src/models/kalman_filter/*.cc",
-#     ]),
-#     hdrs = glob([
-#         "include/lidar_localization/models/kalman_filter/*.hpp",
-#         "include/lidar_localization/models/kalman_filter/*.h",
-#     ]),
-#     deps = [
-#         ":sensor_data",
-#         ":tools",
-#         "@boost",
-#         "@eigen",
-#         "@geographiclib",
-#         "@com_google_ceres//:ceres",
-#         "@com_github_google_glog//:glog",
-#         "@com_github_sophus//:sophus",
-#         "@com_github_jbeder_yaml_cpp//:yaml-cpp",
-#         "@local_config_pcl//:pcl",
-#         "//third_party/g2o",
-#     ],
-#     includes = ["include/"],
-#     strip_include_prefix = "include/",
-#     include_prefix = "modules/localization/shenlan_msf/core/",
-# )
+cc_library(
+    name = "kalman_filter",
+    srcs = glob([
+        "src/models/kalman_filter/*.cpp",
+        "src/models/kalman_filter/*.cc",
+    ]),
+    hdrs = glob([
+        "include/lidar_localization/models/kalman_filter/*.hpp",
+        "include/lidar_localization/models/kalman_filter/*.h",
+    ]),
+    deps = [
+        ":sensor_data",
+        ":tools",
+        "@boost",
+        "@eigen",
+        "@geographiclib",
+        "@com_google_ceres//:ceres",
+        "@com_github_google_glog//:glog",
+        "@com_github_sophus//:sophus",
+        "@com_github_jbeder_yaml_cpp//:yaml-cpp",
+        "@local_config_pcl//:pcl",
+        "//third_party/g2o",
+    ],
+    includes = ["include/"],
+    strip_include_prefix = "include/",
+    include_prefix = "modules/localization/shenlan_msf/core/",
+)
 
 
 cc_library(

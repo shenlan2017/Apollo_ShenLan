@@ -39,20 +39,32 @@ bool PangolinVisualizerComponent::Init() {
     AERROR << "InitIO failed.";
     return false;
   }
-  AINFO << "SUCCESS VIEWER INIT.";
-  viewer = std::make_shared<PangolinViewer>();
-  AINFO << "SUCCESS VIEWER START.";
 
   return true;
 }
 
 bool PangolinVisualizerComponent::InitConfig() {
-  // map_folder_ = FLAGS_map_dir + "/" + FLAGS_local_map_name;
-  lidar_extrinsic_file_ = FLAGS_lidar_extrinsics_file;
-  // lidar_local_topic_ = FLAGS_localization_lidar_topic;
-  // gnss_local_topic_ = FLAGS_localization_gnss_topic;
-  // fusion_local_topic_ = FLAGS_localization_topic;
-  std::cout << "lidar_extrinsic_file_" << lidar_extrinsic_file_<< std::endl;
+  shenlan_config::Config visualizer_config;
+  if (!apollo::cyber::common::GetProtoFromFile(config_file_path_,
+                                               &visualizer_config)) {
+    return false;
+  }
+
+  lidar_extrinsic_file_ = visualizer_config.lidar_extrinsics_path();
+  fusion_local_topic_ = visualizer_config.localization_topic();
+  gnss_local_topic_ = visualizer_config.odometry_gnss_topic();
+  lidar_local_topic_ = visualizer_config.lidar_pose_topic();
+  is_mapping = visualizer_config.is_mapping();
+
+  if (is_mapping == false) {
+    const std::string config_file_path =
+        WORK_SPACE_PATH + "/config/filtering/shenlan_filtering.yaml";
+    YAML::Node config_node = YAML::LoadFile(config_file_path);
+    viewer = std::make_shared<PangolinViewer>(config_node);
+  }else{
+    viewer = std::make_shared<PangolinViewer>();
+  }
+
   bool success =
       msf::velodyne::LoadExtrinsic(lidar_extrinsic_file_, &velodyne_extrinsic);
   if (!success) {
@@ -107,7 +119,8 @@ bool PangolinVisualizerComponent::Proc(
   sor.setLeafSize(0.5f, 0.5f, 0.5f);
   sor.filter(*lidar_frame.cloud_ptr_);
 
-  if (!lidar_pose_list_.empty() && !gnss_pose_list_.empty() && !fusion_pose_list_.empty()) {
+  if (!lidar_pose_list_.empty() && !gnss_pose_list_.empty() &&
+      !fusion_pose_list_.empty()) {
     PoseData lidar_pose_result, gnss_pose_result, fusion_pose_result;
     bool syn_lidar = false, syn_gnss = false, syn_fusion = false;
     {
@@ -135,7 +148,8 @@ bool PangolinVisualizerComponent::Proc(
       std::unique_lock<std::mutex> lidar_lock(lidar_pose_list_mutex_);
       int count_flag = 10;
       while (count_flag-- > 0) {
-        if (PoseData::SyncData(timestamp, lidar_pose_list_, lidar_pose_result)) {
+        if (PoseData::SyncData(timestamp, lidar_pose_list_,
+                               lidar_pose_result)) {
           syn_lidar = true;
           break;
         }

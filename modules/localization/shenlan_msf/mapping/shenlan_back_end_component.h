@@ -23,6 +23,11 @@
 
 #include "Eigen/Core"
 #include "Eigen/Geometry"
+#include "lidar_localization/sensor_data/cloud_data.h"
+#include "lidar_localization/sensor_data/gnss_data.h"
+#include "lidar_localization/sensor_data/imu_data.h"
+#include "lidar_localization/sensor_data/pose_data.h"
+#include "lidar_localization/sensor_data/velocity_data.h"
 #include "yaml-cpp/yaml.h"
 
 #include "modules/canbus/proto/chassis.pb.h"
@@ -34,6 +39,7 @@
 #include "modules/drivers/proto/pointcloud.pb.h"
 #include "modules/localization/proto/gps.pb.h"
 #include "modules/localization/proto/localization.pb.h"
+#include "modules/localization/proto/shenlan_config.pb.h"
 
 #include "cyber/class_loader/class_loader.h"
 #include "cyber/common/file.h"
@@ -43,6 +49,7 @@
 #include "cyber/cyber.h"
 #include "cyber/message/raw_message.h"
 #include "cyber/time/clock.h"
+#include "modules/common/adapters/adapter_gflags.h"
 #include "modules/common/configs/config_gflags.h"
 #include "modules/common/math/euler_angles_zxy.h"
 #include "modules/common/math/math_utils.h"
@@ -51,18 +58,11 @@
 #include "modules/common/status/status.h"
 #include "modules/common/util/time_util.h"
 #include "modules/localization/common/localization_gflags.h"
-#include "modules/transform/transform_broadcaster.h"
-// #include "modules/localization/msf/local_integ/localization_params.h"
-#include "lidar_localization/sensor_data/cloud_data.h"
-#include "lidar_localization/sensor_data/gnss_data.h"
-#include "lidar_localization/sensor_data/imu_data.h"
-#include "lidar_localization/sensor_data/pose_data.h"
-#include "lidar_localization/sensor_data/velocity_data.h"
-
 #include "modules/localization/shenlan_msf/interface/back_end.h"
 #include "modules/localization/shenlan_msf/interface/loop_closing.h"
 #include "modules/localization/shenlan_msf/interface/msg_transfer.h"
 #include "modules/localization/shenlan_msf/interface/post_processing.h"
+#include "modules/transform/transform_broadcaster.h"
 
 using namespace lidar_localization;
 
@@ -95,20 +95,11 @@ class MsgPublisher {
   std::string broadcast_tf_child_frame_id_ = "";
   apollo::transform::TransformBroadcaster tf2_broadcaster_;
 
-  std::string localization_topic_ = "/apollo/localization/pose";
+  std::string localization_topic_ = "";
   std::shared_ptr<cyber::Writer<LocalizationEstimate>> localization_talker_ =
       nullptr;
 
-  std::string lidar_local_topic_ = "/apollo/localization/shenlan_msf_lidar";
-  std::shared_ptr<cyber::Writer<LocalizationEstimate>> lidar_local_talker_ =
-      nullptr;
-
-  std::string gnss_local_topic_ = "/apollo/localization/shenlan_msf_gnss";
-  std::shared_ptr<cyber::Writer<LocalizationEstimate>> gnss_local_talker_ =
-      nullptr;
-
-  std::string localization_status_topic_ =
-      "/apollo/localization/shenlan_msf_status";
+  std::string localization_status_topic_ = "";
   std::shared_ptr<cyber::Writer<LocalizationStatus>>
       localization_status_talker_ = nullptr;
 
@@ -159,30 +150,28 @@ class ShenLanBackEndComponent final : public apollo::cyber::TimerComponent {
   bool ValidData();
 
  private:
-  std::string lidar_extrinsics_file =
-      "/apollo/modules/calibration/data/dev_kit_pix_hooke/lidar_params/"
-      "lidar_novatel_extrinsics.yaml";
+  std::string lidar_extrinsics_file = "";
 
   std::shared_ptr<cyber::Reader<drivers::PointCloud>> lidar_listener_ = nullptr;
-  std::string lidar_topic_ = "/apollo/sensor/lidar/PointCloud2";
+  std::string lidar_topic_ = "";
 
   std::shared_ptr<cyber::Reader<LocalizationEstimate>> lidar_pose_listener_ =
       nullptr;
-  std::string lidar_pose_topic_ = "/apollo/localization/shenlan_msf_lidar";
+  std::string lidar_pose_topic_ = "";
 
   std::shared_ptr<cyber::Reader<LocalizationEstimate>> gnss_pose_listener_ =
       nullptr;
-  std::string gnss_pose_topic_ = "/apollo/localization/shenlan_msf_gnss";
+  std::string gnss_pose_topic_ = "";
 
   std::shared_ptr<cyber::Reader<canbus::Chassis>> chassis_listener_ = nullptr;
-  std::string chassis_topic_ = "/apollo/canbus/chassis";
+  std::string chassis_topic_ = "";
 
   std::shared_ptr<cyber::Reader<drivers::gnss::Imu>> raw_imu_listener_ =
       nullptr;
-  std::string raw_imu_topic_ = "/apollo/sensor/gnss/imu";
+  std::string raw_imu_topic_ = "";
 
   std::shared_ptr<cyber::Reader<LoopPose>> loop_closing_listener_ = nullptr;
-  std::string loop_closing_topic_ = "/apollo/localization/loop_pose";
+  std::string loop_closing_topic_ = "";
 
   //   std::shared_ptr<cyber::Reader<drivers::gnss::GnssBestPose>>
   //       bestgnsspos_listener_ = nullptr;
@@ -245,7 +234,6 @@ class ShenLanBackEndComponent final : public apollo::cyber::TimerComponent {
 };
 
 CYBER_REGISTER_COMPONENT(ShenLanBackEndComponent);
-
 
 }  // namespace localization
 }  // namespace apollo

@@ -16,6 +16,21 @@ PangolinViewer::PangolinViewer(){
   render_loop = std::thread(&PangolinViewer::Run, this);
 }
 
+PangolinViewer::PangolinViewer(const YAML::Node& config_node) {
+  // create a window and bind its context to the main thread
+  pangolin::CreateWindowAndBind(window_name, 1024, 768);
+
+  // enable depth
+  glEnable(GL_DEPTH_TEST);
+
+  // unset the current context from the main thread
+  pangolin::GetBoundWindow()->RemoveCurrent();
+
+  render_loop = std::thread(&PangolinViewer::Run, this);
+
+  LoadGlobalMap(config_node);
+}
+
 // DestroyWindow
 PangolinViewer::~PangolinViewer(){
   // 发送退出指令
@@ -26,19 +41,36 @@ PangolinViewer::~PangolinViewer(){
   std::cerr << "DestroyWindow Finished!" << std::endl;
 }
 
+bool PangolinViewer::LoadGlobalMap(const YAML::Node& config_node) {
+  const std::string map_path_ = config_node["map_path"].as<std::string>();
+  const std::string filter_mothod =
+      config_node["global_map_filter"].as<std::string>();
+
+  global_map_ptr_.reset(new CloudData::CloudType());
+  pcl::io::loadPCDFile(map_path_, *global_map_ptr_);
+  AINFO << "Load global map, size:" << global_map_ptr_->points.size();
+
+  std::shared_ptr<CloudFilterInterface> global_map_filter_ptr_ = nullptr;
+  if (filter_mothod == "voxel_filter") {
+    global_map_filter_ptr_ = std::shared_ptr<VoxelFilter>(
+        new VoxelFilter(config_node[filter_mothod]["global_map"]));
+  } else if (filter_mothod == "no_filter") {
+    global_map_filter_ptr_ = std::shared_ptr<NoFilter>(new NoFilter);
+  } else {
+    AERROR << "Filter method " << filter_mothod << " for global_map NOT FOUND!";
+    return false;
+  }
+
+  global_map_filter_ptr_->Filter(global_map_ptr_, global_map_ptr_);
+  AINFO << "Filtered global map, size:" << global_map_ptr_->points.size();
+
+  return true;
+}
+
 void PangolinViewer::Run() {
   pangolin::BindToContext(window_name);
   glEnable(GL_BLEND);       // 在OpenGL中使用颜色混合
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // 选择混合选项
-
-  pangolin::CreatePanel("menu").SetBounds(0.0, 1.0, 0.0,
-                                          pangolin::Attach::Pix(175));
-  pangolin::Var<bool> menu_gnss_dominant("menu.Follow GNSS", true, true);
-  pangolin::Var<bool> menu_lidar_dominant("menu.Follow Lidar", false, true);
-  pangolin::Var<bool> menu_fusion_dominant("menu.Follow Fusion", false, true);
-
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
 
   // Define Projection and initial ModelView matrix
   pangolin::OpenGlRenderState s_cam(
@@ -51,16 +83,36 @@ void PangolinViewer::Run() {
                               .SetBounds(0.0, 1.0, pangolin::Attach::Pix(175),
                                          1.0, -640.0f / 480.0f)
                               .SetHandler(&handler);
+
+  pangolin::CreatePanel("menu").SetBounds(0.0, 1.0, 0.0,
+                                          pangolin::Attach::Pix(175));
+  pangolin::Var<bool> menu_gnss_dominant("menu.Follow GNSS", true, true);
+  pangolin::Var<bool> menu_lidar_dominant("menu.Follow Lidar", false, true);
+  pangolin::Var<bool> menu_fusion_dominant("menu.Follow Fusion", false, true);
+
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
   while (!pangolin::ShouldQuit()) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     d_cam.Activate(s_cam);
 
+
+    if (global_map_ptr_ != nullptr){
+      glPointSize(2);
+      glBegin(GL_POINTS);
+      glColor4d(0.0f, 1.0f, 0.0f, 0.8f);
+      for (size_t j = 0; j < global_map_ptr_->points.size(); j++) {
+        glVertex3d(global_map_ptr_->points[j].x, global_map_ptr_->points[j].y,
+                   global_map_ptr_->points[j].z);
+      }
+      glEnd();
+    }
+
     std::unique_lock<std::mutex> info_lock(info_list_mutex_);
     cur_draw = input_list;
 
-    // TODO:菜单选择投影到那个位姿，目前还有点问题
     if (pangolin::Pushed(menu_lidar_dominant)) {
       menu_gnss_dominant = false;
       menu_lidar_dominant = true;
@@ -77,6 +129,10 @@ void PangolinViewer::Run() {
 
     CloudData::CloudTypePtr local_map_cloud_tmp(new CloudData::CloudType());
     size_t color_point_threshold = 10;
+    if (global_map_ptr_ != nullptr){
+      color_point_threshold = 50;
+    }
+
     for (size_t i = 0; i < cur_draw.size(); ++i) {
       auto lidar_pose = cur_draw[i].lidar_pose.pose_;
       auto gnss_pose = cur_draw[i].gnss_pose.pose_;
@@ -104,20 +160,26 @@ void PangolinViewer::Run() {
         show_flag = true;
       }
 
-      if ((cur_draw.size() > color_point_threshold &&
-           i >= cur_draw.size() - color_point_threshold) && show_flag) {
-        glPointSize(1);
-        glBegin(GL_POINTS);
-        glColor4f(0.0f, 0.0f, 0.8f, 0.8f);
-        for (size_t j = 0; j < (size_t)(output_cloud_ptr->points.size()); j++) {
-          glVertex3d(output_cloud_ptr->points[j].x, output_cloud_ptr->points[j].y,
-                     output_cloud_ptr->points[j].z);
+      if (show_flag) {
+        bool case1 = cur_draw.size() < color_point_threshold;
+        bool case2 = (cur_draw.size() > color_point_threshold) &&
+                     (i >= cur_draw.size() - color_point_threshold);
+        if (case1 || case2) {
+          glPointSize(1);
+          glBegin(GL_POINTS);
+          glColor4f(0.0f, 0.0f, 0.8f, 0.8f);
+          for (size_t j = 0; j < (size_t)(output_cloud_ptr->points.size());
+               j++) {
+            glVertex3d(output_cloud_ptr->points[j].x,
+                       output_cloud_ptr->points[j].y,
+                       output_cloud_ptr->points[j].z);
+          }
+          glEnd();
+        }else{
+          local_map_cloud_tmp->points.insert(local_map_cloud_tmp->end(),
+                                             output_cloud_ptr->begin(),
+                                             output_cloud_ptr->end());
         }
-        glEnd();
-      } else if (show_flag) {
-        local_map_cloud_tmp->points.insert(local_map_cloud_tmp->end(),
-                                           output_cloud_ptr->begin(),
-                                           output_cloud_ptr->end());
       }
 
       Eigen::Isometry3f gnss_T = Eigen::Isometry3f::Identity();

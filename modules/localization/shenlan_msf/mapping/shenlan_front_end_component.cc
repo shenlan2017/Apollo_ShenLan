@@ -14,7 +14,7 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/localization/shenlan_msf/shenlan_front_end_component.h"
+#include "modules/localization/shenlan_msf/mapping/shenlan_front_end_component.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -61,6 +61,17 @@ bool ShenLanFrontEndComponent::Init() {
 }
 
 bool ShenLanFrontEndComponent::InitConfig() {
+  shenlan_config::Config mapping_config;
+  if (!apollo::cyber::common::GetProtoFromFile("/apollo/modules/localization/conf/shenlan_localization.pb.txt", &mapping_config)) {
+    return false;
+  }
+  AINFO << "ShenLan Mapping Config: " << mapping_config.DebugString();
+
+  lidar_extrinsics_file = mapping_config.lidar_extrinsics_path();
+  lidar_topic_ = mapping_config.lidar_topic();
+  odometry_topic_ = mapping_config.gps_topic();
+  odometry_status_topic_ = mapping_config.gps_status_topic();
+
   front_end_ptr_ = std::shared_ptr<FrontEnd>(new FrontEnd());
   tools = std::shared_ptr<MsgTransfer>(new MsgTransfer());
   front_end_loop =
@@ -100,24 +111,27 @@ bool ShenLanFrontEndComponent::isFinished() {
 }
 
 bool ShenLanFrontEndComponent::InitIO() {
+  // 订阅雷达信息
   cyber::ReaderConfig reader_config;
   reader_config.channel_name = lidar_topic_;
   reader_config.pending_queue_size = 10;
-
-  // 订阅雷达信息
   lidar_listener_ = node_->CreateReader<drivers::PointCloud>(
       reader_config, std::bind(&ShenLanFrontEndComponent::OnPointCloud, this,
                                std::placeholders::_1));
 
   // 订阅Odometry信息
+  reader_config.channel_name = odometry_topic_;
+  reader_config.pending_queue_size = 10;
   odometry_listener_ = node_->CreateReader<localization::Gps>(
-      odometry_topic_, std::bind(&ShenLanFrontEndComponent::OnOdometry, this,
-                                 std::placeholders::_1));
+      reader_config, std::bind(&ShenLanFrontEndComponent::OnOdometry, this,
+                               std::placeholders::_1));
 
   // 订阅InsStat信息
+  reader_config.channel_name = odometry_status_topic_;
+  reader_config.pending_queue_size = 10;
   odometry_status_listener_ = node_->CreateReader<drivers::gnss::InsStat>(
-      odometry_status_topic_, std::bind(&ShenLanFrontEndComponent::OnInsStat,
-                                        this, std::placeholders::_1));
+      reader_config, std::bind(&ShenLanFrontEndComponent::OnInsStat, this,
+                               std::placeholders::_1));
   // 初始化发布器
   if (!publisher_->InitIO()) {
     return false;
@@ -204,6 +218,12 @@ void ShenLanFrontEndComponent::UpdateLaserOdometry() {
 
         gnss_origin = odom_pose.block<3, 1>(0, 3);
         odom_pose.block<3, 1>(0, 3) = Eigen::Vector3f::Zero();
+        const std::string gnss_origin_path =
+            WORK_SPACE_PATH + "/slam_data/map/gnss_origin.txt";
+        std::ofstream gnss_origin_ofs_;
+        gnss_origin_ofs_ << gnss_origin(0, 0) << " " << gnss_origin(1, 0) << " "
+                         << gnss_origin(2, 0) << std::endl;
+        FileManager::CreateFile(gnss_origin_path, gnss_origin_ofs_);
 
         AINFO << "Init Pose is : \n" << odom_pose;
         front_end_ptr_->SetInitPose(odom_pose);
@@ -317,16 +337,20 @@ LocalizationMsgPublisher::LocalizationMsgPublisher(
     : node_(node) {}
 
 bool LocalizationMsgPublisher::InitConfig() {
-  lidar_local_topic_ = "/apollo/localization/shenlan_msf_lidar";
-  gnss_local_topic_ = "/apollo/localization/shenlan_msf_gnss";
-  localization_status_topic_ = "/apollo/localization/shenlan_msf_status";
+  shenlan_config::Config mapping_config;
+  if (!apollo::cyber::common::GetProtoFromFile(
+          "/apollo/modules/localization/conf/shenlan_localization.pb.txt",
+          &mapping_config)) {
+    return false;
+  }
+  AINFO << "ShenLan Mapping Config: " << mapping_config.DebugString();
+  gnss_local_topic_ = mapping_config.odometry_gnss_topic();
+  lidar_local_topic_ = mapping_config.lidar_pose_topic();
+
   return true;
 }
 
 bool LocalizationMsgPublisher::InitIO() {
-  localization_status_talker_ =
-      node_->CreateWriter<LocalizationStatus>(localization_status_topic_);
-
   lidar_local_talker_ =
       node_->CreateWriter<LocalizationEstimate>(lidar_local_topic_);
 
@@ -334,11 +358,6 @@ bool LocalizationMsgPublisher::InitIO() {
       node_->CreateWriter<LocalizationEstimate>(gnss_local_topic_);
 
   return true;
-}
-
-void LocalizationMsgPublisher::PublishLocalizationStatus(
-    const LocalizationStatus& localization_status) {
-  localization_status_talker_->Write(localization_status);
 }
 
 void LocalizationMsgPublisher::PublishLocalizationSLMSFLidar(

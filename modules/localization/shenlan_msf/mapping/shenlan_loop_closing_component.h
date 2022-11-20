@@ -18,10 +18,14 @@
 
 #include <memory>
 #include <string>
-#include "cyber/class_loader/class_loader.h"
-#include "cyber/component/component.h"
-#include "cyber/cyber.h"
-#include "cyber/message/raw_message.h"
+
+#include "lidar_localization/global_defination/global_defination.h"
+#include "lidar_localization/sensor_data/cloud_data.h"
+#include "lidar_localization/sensor_data/gnss_data.h"
+#include "lidar_localization/sensor_data/imu_data.h"
+#include "lidar_localization/sensor_data/pose_data.h"
+#include "lidar_localization/sensor_data/velocity_data.h"
+
 #include "modules/canbus/proto/chassis.pb.h"
 #include "modules/drivers/gnss/proto/gnss_best_pose.pb.h"
 #include "modules/drivers/gnss/proto/gnss_raw_observation.pb.h"
@@ -30,10 +34,14 @@
 #include "modules/drivers/proto/pointcloud.pb.h"
 #include "modules/localization/proto/gps.pb.h"
 #include "modules/localization/proto/localization.pb.h"
-#include "modules/transform/transform_broadcaster.h"
+#include "modules/localization/proto/shenlan_config.pb.h"
 
+#include "cyber/class_loader/class_loader.h"
 #include "cyber/common/file.h"
 #include "cyber/common/log.h"
+#include "cyber/component/component.h"
+#include "cyber/cyber.h"
+#include "cyber/message/raw_message.h"
 #include "cyber/time/clock.h"
 #include "modules/common/configs/config_gflags.h"
 #include "modules/common/math/euler_angles_zxy.h"
@@ -42,18 +50,10 @@
 #include "modules/common/monitor_log/monitor_log_buffer.h"
 #include "modules/common/status/status.h"
 #include "modules/common/util/time_util.h"
-
-#include "lidar_localization/sensor_data/cloud_data.h"
-#include "lidar_localization/sensor_data/gnss_data.h"
-#include "lidar_localization/sensor_data/imu_data.h"
-#include "lidar_localization/sensor_data/pose_data.h"
-#include "lidar_localization/sensor_data/velocity_data.h"
-
-#include "modules/localization/shenlan_msf/interface/loop_closing.h"
-#include "modules/localization/shenlan_msf/core/include/lidar_localization/sensor_data/key_frame.h"
 #include "modules/localization/shenlan_msf/core/include/lidar_localization/sensor_data/cloud_data.h"
-#include "lidar_localization/global_defination/global_defination.h"
-
+#include "modules/localization/shenlan_msf/core/include/lidar_localization/sensor_data/key_frame.h"
+#include "modules/localization/shenlan_msf/interface/loop_closing.h"
+#include "modules/transform/transform_broadcaster.h"
 
 using namespace lidar_localization;
 namespace apollo {
@@ -91,7 +91,7 @@ class LoopClosingComponent final
   std::string key_frame_topic_ = "/apollo/localization/key_frame";
   std::shared_ptr<cyber::Writer<LoopPose>> loop_closing_publisher_ = nullptr;
   std::string loop_closing_topic_ = "/apollo/localization/loop_pose";
-  
+
   std::shared_ptr<LoopClosing> loop_closing_;
   std::unique_ptr<cyber::Timer> loop_closing_timer_ = nullptr;
 

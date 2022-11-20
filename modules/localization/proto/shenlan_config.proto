@@ -1,0 +1,28 @@
+syntax = "proto2";
+
+package apollo.localization.shenlan_config;
+
+message Config {
+  optional string localization_topic = 1;
+  optional string imu_topic = 2;
+  optional string gps_topic = 3;
+  optional string broadcast_tf_frame_id = 4;
+  optional string broadcast_tf_child_frame_id = 5;
+  optional int32  imu_list_max_size = 6;
+  optional double gps_imu_time_diff_threshold = 7;
+  optional double map_offset_x = 8;
+  optional double map_offset_y = 9;
+  optional double map_offset_z = 10;
+  optional string localization_status_topic = 11;
+  optional string gps_status_topic = 12;
+  optional string chassis_topic = 16;
+  optional string lidar_extrinsics_path = 13;
+  optional string synch_imu_topic = 14;
+  optional string lidar_topic = 15;
+  optional string synch_posvel_topic = 17;
+  optional string lidar_trans_topic = 18;
+  optional bool   is_mapping = 19;
+  optional string lidar_pose_topic = 20;
+  optional string odometry_gnss_topic = 21;
+  optional string loop_closing_topic = 22;
+}

@@ -3,10 +3,11 @@ module_config {
     module_library : "/apollo/bazel-bin/modules/localization/shenlan_msf/libshenlan_localization_component.so"
 
     components {
-      class_name : "SLMSFLocalizationComponent"
+      class_name : "PretreatComponent"
       config {
-        name : "shenlan_localization"
+        name : "shenlan_pretreat"
         flag_file_path : "/apollo/modules/localization/conf/localization.conf"
+        config_file_path : "/apollo/modules/localization/conf/shenlan_localization.pb.txt"
         readers: [
           {
             channel: "/apollo/sensor/gnss/imu"
@@ -19,13 +20,14 @@ module_config {
       }
     }
     components {
-      class_name : "LoopClosingComponent"
+      class_name : "FilteringComponent"
       config {
-        name : "shenlan_loop_closing"
+        name : "shenlan_filtering"
         flag_file_path : "/apollo/modules/localization/conf/localization.conf"
+        config_file_path : "/apollo/modules/localization/conf/shenlan_localization.pb.txt"
         readers: [
           {
-            channel: "/apollo/sensor/lidar/compensator/PointCloud2"
+            channel: "/apollo/sensor/gnss/imu"
             qos_profile: {
               depth : 10
             }
@@ -35,3 +37,4 @@ module_config {
       }
     }
 }
+

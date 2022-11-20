@@ -38,11 +38,10 @@ class BoxFilter : public CloudFilterInterface {
  private:
   void CalculateEdge();
 
-  pcl::CropBox<CloudData::PointType> pcl_box_filter_;
-
   std::vector<float> origin_;
   std::vector<float> size_;
   std::vector<float> edge_;
+
 };
 }  // namespace lidar_localization
 

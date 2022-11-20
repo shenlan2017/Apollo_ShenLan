@@ -54,7 +54,6 @@ class KalmanFilter {
    * @brief Kalman filter measurement data
    */
   struct Measurement {
-   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     // timestamp:
     double time{0.0};
@@ -194,7 +193,6 @@ class KalmanFilter {
 
   // observability analysis:
   struct {
-   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     std::vector<double> time;
     std::vector<Eigen::MatrixXd, Eigen::aligned_allocator<Eigen::MatrixXd>> Q;

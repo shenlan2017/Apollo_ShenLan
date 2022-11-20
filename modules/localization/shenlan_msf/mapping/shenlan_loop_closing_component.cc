@@ -14,7 +14,7 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/localization/shenlan_msf/shenlan_loop_closing_component.h"
+#include "modules/localization/shenlan_msf/mapping/shenlan_loop_closing_component.h"
 
 #include "cyber/time/clock.h"
 #include "modules/common/adapters/adapter_gflags.h"
