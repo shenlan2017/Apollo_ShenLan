@@ -218,6 +218,12 @@ void ShenLanFrontEndComponent::UpdateLaserOdometry() {
 
         gnss_origin = odom_pose.block<3, 1>(0, 3);
         odom_pose.block<3, 1>(0, 3) = Eigen::Vector3f::Zero();
+        const std::string gnss_origin_path =
+            WORK_SPACE_PATH + "/slam_data/map/gnss_origin.txt";
+        std::ofstream gnss_origin_ofs_;
+        gnss_origin_ofs_ << gnss_origin(0, 0) << " " << gnss_origin(1, 0) << " "
+                         << gnss_origin(2, 0) << std::endl;
+        FileManager::CreateFile(gnss_origin_path, gnss_origin_ofs_);
 
         AINFO << "Init Pose is : \n" << odom_pose;
         front_end_ptr_->SetInitPose(odom_pose);

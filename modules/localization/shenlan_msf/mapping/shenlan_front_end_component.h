@@ -24,11 +24,13 @@
 
 #include "Eigen/Core"
 #include "Eigen/Geometry"
+#include "lidar_localization/global_defination/global_defination.h"
 #include "lidar_localization/sensor_data/cloud_data.h"
 #include "lidar_localization/sensor_data/gnss_data.h"
 #include "lidar_localization/sensor_data/imu_data.h"
 #include "lidar_localization/sensor_data/pose_data.h"
 #include "lidar_localization/sensor_data/velocity_data.h"
+#include "lidar_localization/tools/file_manager.h"
 #include "yaml-cpp/yaml.h"
 
 #include "modules/canbus/proto/chassis.pb.h"

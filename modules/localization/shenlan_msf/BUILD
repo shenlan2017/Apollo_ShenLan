@@ -63,6 +63,7 @@ COMMON_DEPS = [
     "//modules/transform:transform_broadcaster",
     "//modules/localization/msf/common/util",
     "//modules/localization/shenlan_msf/core:pre_integrator",
+    "//modules/localization/shenlan_msf/core:tools",
     "//modules/localization/shenlan_msf/core:registration",
     "//modules/localization/shenlan_msf/core:cloud_filter",
     "//modules/localization/shenlan_msf/core:sensor_data",

@@ -445,12 +445,11 @@ bool PretreatComponent::InitGNSS() {
     if (is_mapping_) {
       gnss_origin_ = gnss_data_buff_.front().pose_.block<3, 1>(0, 3);
       gnss_inited = true;
-      LOG(INFO) << "System is mapping mode, gnss origin inited." << std::endl;
     }
     // system is localization mode
     else {
       const std::string gnss_origin_path =
-          WORK_SPACE_PATH + "/slam_data/save_map/gnss_origin.txt";
+          WORK_SPACE_PATH + "/slam_data/map/gnss_origin.txt";
       // const std::string gnss_origin_path =
       //     WORK_SPACE_PATH + "/slam_data/map/gnss_origin.txt";
       if (!FileManager::IsValidDirectory(gnss_origin_path)) {

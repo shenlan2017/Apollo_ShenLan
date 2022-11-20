@@ -86,6 +86,8 @@ class PangolinVisualizerComponent final
   std::shared_ptr<cyber::Reader<LocalizationEstimate>> fusion_local_listener_ =
       nullptr;
   std::string fusion_local_topic_ = "";
+
+  bool is_mapping = true;
 };
 
 CYBER_REGISTER_COMPONENT(PangolinVisualizerComponent);

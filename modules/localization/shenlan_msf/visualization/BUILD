@@ -44,6 +44,7 @@ cc_library(
         "@boost",
         "@eigen",
         "@local_config_pcl//:pcl",
+        "@com_github_jbeder_yaml_cpp//:yaml-cpp",
         "@opengl",
         "//third_party/pangolin",
         "//modules/localization/msf/common/util",
