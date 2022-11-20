@@ -27,6 +27,12 @@ using apollo::cyber::Clock;
 using common::util::TimeUtil;
 
 FilteringComponent::FilteringComponent() {}
+
+FilteringComponent::~FilteringComponent() {
+  AINFO<<"Saving trajectory";
+  SaveOdometry();
+}
+
 bool FilteringComponent::Init() {
   tf2_broadcaster_.reset(new apollo::transform::TransformBroadcaster(node_));
   // 初始化配置环境
@@ -53,6 +59,7 @@ bool FilteringComponent::InitConfig() {
   AINFO << "ShenLan Filter config: " << filter_config.DebugString();
 
   lidar_topic_ = filter_config.lidar_trans_topic();
+  odometry_topic_ = filter_config.odometry_gnss_topic();
   lidar_extrinsics_path_ = filter_config.lidar_extrinsics_path();
   synch_imu_topic_ = filter_config.synch_imu_topic();
   synch_posvel_topic_ = filter_config.synch_posvel_topic();
@@ -81,6 +88,10 @@ bool FilteringComponent::InitIO() {
 
   imu_synced_listener_ = node_->CreateReader<IMUData>(
       synch_imu_topic_, std::bind(&FilteringComponent::SynchImuCallback, this,
+                            std::placeholders::_1));
+
+  odometry_listener_ = node_->CreateReader<LocalizationEstimate>(
+      odometry_topic_, std::bind(&FilteringComponent::OdometryCallback, this,
                             std::placeholders::_1));
 
   // publish
@@ -191,6 +202,14 @@ void FilteringComponent::SynchImuCallback(const std::shared_ptr<IMUData>& imu_sy
     imu_synced_data_buff_.pop_front();
     imu_synced_data_buff_.push_back(*imu_synced_msg);
   }
+}
+
+void FilteringComponent::OdometryCallback(const std::shared_ptr<LocalizationEstimate>& odometry_msg){
+  PoseData odometry;
+  tools.PoseMsgTransfer(odometry_msg, odometry);
+
+  std::lock_guard<std::mutex> lock(odometry_list_mutex_);
+  odometry_data_buff_.push_back(odometry);
 }
 
 bool FilteringComponent::ValidLidarData() {
@@ -307,7 +326,6 @@ bool FilteringComponent::PublishFusionOdom()  {
   return true;
 }
 
-
 bool FilteringComponent::PublishLidarOdom()  {
 LocalizationEstimate* localization = new LocalizationEstimate ;
 ComposeLocalizationMsg(laser_pose_,localization,current_cloud_data_.time_);
@@ -342,5 +360,76 @@ void FilteringComponent::FillLocalizationMsgHeader( LocalizationEstimate *locali
   header->set_timestamp_sec(timestamp);
 }
 
+bool FilteringComponent::SaveOdometry() {
+  if (0 == trajectory_.N) {
+    return false;
+  }
+
+  // init output files:
+  std::ofstream fused_odom_ofs;
+  std::ofstream laser_odom_ofs;
+  std::ofstream ref_odom_ofs;
+  if (!FileManager::CreateFile(
+          WORK_SPACE_PATH + "/slam_data/trajectory/fused.txt",
+          fused_odom_ofs) ||
+      !FileManager::CreateFile(
+          WORK_SPACE_PATH + "/slam_data/trajectory/laser.txt",
+          laser_odom_ofs) ||
+      !FileManager::CreateFile(
+          WORK_SPACE_PATH + "/slam_data/trajectory/ground_truth.txt",
+          ref_odom_ofs)) {
+    return false;
+  }
+
+  // write outputs:
+  const double half_sampling_time = 0.05;  // LiDAR is 10hz
+  for (size_t i = 0; i < trajectory_.N; ++i) {
+    // sync ref pose with gnss measurement:
+    while (!odometry_data_buff_.empty() &&
+           (odometry_data_buff_.front().time_ - trajectory_.time.at(i) <=
+            -half_sampling_time)) {
+      odometry_data_buff_.pop_front();
+    }
+
+    if (odometry_data_buff_.empty()) {
+      break;
+    }
+
+    current_gnss_data_ = odometry_data_buff_.front();
+
+    const Eigen::Vector3f& position_ref =
+        current_gnss_data_.pose_.block<3, 1>(0, 3);
+    const Eigen::Vector3f& position_lidar =
+        trajectory_.lidar.at(i).block<3, 1>(0, 3);
+
+    if ((position_ref - position_lidar).norm() > 3.0) {
+      LOG(INFO) << "(position_ref - position_lidar).norm() > 3.0";
+      continue;
+    }
+
+    SavePose(trajectory_.fused.at(i), fused_odom_ofs);
+    SavePose(trajectory_.lidar.at(i), laser_odom_ofs);
+    SavePose(current_gnss_data_.pose_, ref_odom_ofs);
+  }
+
+  return true;
+}
+
+bool FilteringComponent::SavePose(const Eigen::Matrix4f& pose,
+                                    std::ofstream& ofs) {
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 4; ++j) {
+      ofs << pose(i, j);
+
+      if (i == 2 && j == 3) {
+        ofs << std::endl;
+      } else {
+        ofs << " ";
+      }
+    }
+  }
+
+  return true;
+}
 }  // namespace localization
 }  // namespace apollo

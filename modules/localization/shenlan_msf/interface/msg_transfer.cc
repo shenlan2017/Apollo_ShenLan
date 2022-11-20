@@ -85,6 +85,28 @@ void MsgTransfer::OdometryMsgTransfer(
   odom_frame.vel_.v.z() = odom_msg->localization().linear_velocity().z();
 }
 
+void MsgTransfer::PoseMsgTransfer(const std::shared_ptr<LocalizationEstimate> &pose_msg, 
+                    PoseData &pose_frame){
+  pose_frame.time_ = pose_msg->measurement_time();
+
+  // set the position:
+  pose_frame.pose_(0, 3) = pose_msg->pose().position().x();
+  pose_frame.pose_(1, 3) = pose_msg->pose().position().y();
+  pose_frame.pose_(2, 3) = pose_msg->pose().position().z();
+
+  Eigen::Quaternionf q;
+  q.x() = pose_msg->pose().orientation().qx();
+  q.y() = pose_msg->pose().orientation().qy();
+  q.z() = pose_msg->pose().orientation().qz();
+  q.w() = pose_msg->pose().orientation().qw();
+  pose_frame.pose_.block<3, 3>(0, 0) = q.matrix();
+
+  // set the linear velocity:
+  pose_frame.vel_.v.x() = pose_msg->pose().linear_velocity().x();
+  pose_frame.vel_.v.y() = pose_msg->pose().linear_velocity().y();
+  pose_frame.vel_.v.z() = pose_msg->pose().linear_velocity().z();
+}
+
 void MsgTransfer::ChassisMsgTransfer(
     const std::shared_ptr<canbus::Chassis> &chassis_msg,
     VelocityData &chassis_frame) {
