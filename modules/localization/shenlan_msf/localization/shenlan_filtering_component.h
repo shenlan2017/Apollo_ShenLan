@@ -46,6 +46,7 @@
 #include "modules/localization/shenlan_msf/interface/filtering.h"
 #include "modules/localization/shenlan_msf/interface/msg_transfer.h"
 #include "modules/transform/transform_broadcaster.h"
+#include "lidar_localization/tools/file_manager.h"
 
 using namespace lidar_localization;
 namespace apollo {
@@ -55,7 +56,7 @@ class FilteringComponent final
     : public cyber::Component<drivers::gnss::Imu> {
  public:
   FilteringComponent();
-  ~FilteringComponent() = default;
+  ~FilteringComponent();
 
   bool Init() override;
 
@@ -103,19 +104,11 @@ class FilteringComponent final
   void FilteringImplementation();
   bool FindNearestOdometryStatus(const double odometry_timestamp, drivers::gnss::InsStat *status);
 
-  /**
-   * @brief  save pose in KITTI format for evo evaluation
-   * @param  pose, input pose
-   * @param  ofs, output file stream
-   * @return true if success otherwise false
-   */
-  static bool SavePose(const Eigen::Matrix4f& pose, std::ofstream& ofs);
-
   bool ValidData();
   bool PublishData();
 
   void LidarCallback(const std::shared_ptr<CloudData>& cloud_msg);
-  void OdometryCallback(const std::shared_ptr<localization::Gps>& gnss_msg);
+  void OdometryCallback(const std::shared_ptr<LocalizationEstimate>& odometry_msg);
   void OnInsStat(const std::shared_ptr<drivers::gnss::InsStat> &message);
   void ChassisCallback(const std::shared_ptr<canbus::Chassis>& chassis_msg);
   void PosVelCallback(const std::shared_ptr<PosVelData>& posvel_msg);
@@ -125,9 +118,10 @@ class FilteringComponent final
   bool PublishLidarOdom();
   void ComposeLocalizationMsg(const Eigen::Matrix4f &gps_msg, LocalizationEstimate *localization, const double time);
   void FillLocalizationMsgHeader(LocalizationEstimate *localization);
+  bool SaveOdometry();
+  bool SavePose(const Eigen::Matrix4f& pose, std::ofstream& ofs);
   std::shared_ptr<cyber::Reader<CloudData>> lidar_listener_ = nullptr;
-  std::shared_ptr<cyber::Reader<localization::Gps>> odometry_listener_ = nullptr;
-  std::shared_ptr<cyber::Reader<drivers::gnss::InsStat>> ins_status_listener_ = nullptr;
+  std::shared_ptr<cyber::Reader<LocalizationEstimate>> odometry_listener_ = nullptr;
   std::shared_ptr<cyber::Reader<canbus::Chassis>> chassis_listener_ = nullptr;
   std::shared_ptr<cyber::Reader<PosVelData>> pos_vel_listener_ = nullptr;
   std::shared_ptr<cyber::Reader<IMUData>> imu_synced_listener_ = nullptr;
@@ -138,7 +132,6 @@ class FilteringComponent final
   std::string lidar_topic_ = "";
   std::string odometry_topic_ = "";
   std::string chassis_topic_ = "";
-  std::string odometry_status_topic_ = "";
   std::string synch_imu_topic_ = "";
   std::string synch_posvel_topic_ = "";
   std::string lidar_extrinsics_path_ = "";
@@ -162,17 +155,9 @@ class FilteringComponent final
   size_t imu_list_max_size_=50;
   std::mutex imu_list_mutex_;
 
-  std::deque<VelocityData,Eigen::aligned_allocator<VelocityData>> chassis_data_buff_;
-  size_t chassis_list_max_size_=50;
-  std::mutex chassis_list_mutex_;
-
   std::deque<PoseData,Eigen::aligned_allocator<PoseData>> odometry_data_buff_;
   size_t odom_list_max_size_=50;
   std::mutex odometry_list_mutex_;
-
-  std::deque<drivers::gnss::InsStat> odometry_status_list_;
-  size_t odometry_status_list_max_size_ = 50;
-  std::mutex odometry_status_list_mutex_;
 
   std::deque<PosVelData,Eigen::aligned_allocator<PosVelData>> pos_vel_data_buff_;
   size_t posvel_list_max_size_=10;

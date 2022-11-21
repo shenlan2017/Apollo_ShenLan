@@ -48,6 +48,9 @@ class MsgTransfer {
   void OdometryMsgTransfer(const std::shared_ptr<localization::Gps> &odom_msg,
                            PoseData &odom_frame);
 
+  void PoseMsgTransfer(const std::shared_ptr<LocalizationEstimate> &pose_msg, 
+                      PoseData &pose_frame);
+
   void ChassisMsgTransfer(const std::shared_ptr<canbus::Chassis> &chassis_msg,
                           VelocityData &chassis_frame);
 
