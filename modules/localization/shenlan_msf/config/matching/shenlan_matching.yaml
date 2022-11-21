@@ -1,0 +1,73 @@
+#
+# data storage:
+#
+# a. global map for relative pose estimation using lidar frontend:
+map_path: /apollo/modules/localization/shenlan_msf/slam_data/map/filtered_map.pcd
+
+#
+# point cloud map & measurement processors
+#
+# a. global map filter:
+global_map_filter: voxel_filter                                 # 选择滑窗地图点云滤波方法，目前支持：voxel_filter、no_filter
+
+# b.1. local map segmenter:
+box_filter_size: [-150.0, 150.0, -150.0, 150.0, -150.0, 150.0]  # 参数顺序是min_x, max_x, min_y, max_y, min_z, max_z
+# b.2. local map filtering:
+local_map_filter: voxel_filter                                  # 选择滑窗地图点云滤波方法，目前支持：voxel_filter、no_filter
+
+# c. current frame filter
+frame_filter: voxel_filter                                      # 选择当前帧点云滤波方法，目前支持：voxel_filter、no_filter
+
+#
+# relative pose estimation using lidar frontend
+#
+registration_method: Point2Plane # 选择点云匹配方法，目前支持：NDT,Point2Plane
+
+# 各配置选项对应参数
+## 滤波相关参数
+voxel_filter:
+    global_map:
+        leaf_size: [0.9, 0.9, 0.9]
+    local_map:
+        leaf_size: [0.5, 0.5, 0.5]
+    frame:
+        # leaf_size: [1.5, 1.5, 1.5]
+        leaf_size: [0.6, 0.6, 0.6]
+
+relocalization:
+    enable_relocalization: false # if false, using gnss data to initalization
+    # beijing.bag
+    # guess_pos: [0.0, 0.0, 0.0]
+    # beijing.bag -s 200
+    # guess_pos: [15, -33, 0.0]
+    # 2wd_fws_loc_parking_start.bag
+    # guess_pos: [-162, 9, -4.0]
+    # 2wd_fws.bag
+    guess_pos: [6, -29, -0.0]
+    fitness_socre_threshold: 5.0 # 5.0
+    # 重定位使用ndt配准的参数
+    res : 2.5
+    step_size : 0.1
+    trans_eps : 0.01
+    max_iter : 30
+
+## 匹配相关参数
+## c. frontend matching
+NDT:
+    res : 1.0
+    step_size : 0.1
+    trans_eps : 0.01
+    max_iter : 30
+
+ICP:
+    max_corr_dist : 1.2
+    trans_eps : 0.01
+    euc_fitness_eps : 0.36
+    max_iter : 30
+
+Point2Plane:
+    num_threads : 4
+    max_corr_dis : 1.0
+    max_iter : 30
+    trans_eps : 0.01
+    degeneracy_threshold: 10

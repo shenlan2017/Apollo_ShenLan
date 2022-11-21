@@ -1,0 +1,42 @@
+# Define all coms in DAG streaming.
+module_config {
+    module_library : "/apollo/bazel-bin/modules/localization/shenlan_msf/libshenlan_localization_component.so"
+
+    components {
+      class_name : "PretreatComponent"
+      config {
+        name : "shenlan_pretreat"
+        flag_file_path : "/apollo/modules/localization/conf/localization.conf"
+        config_file_path : "/apollo/modules/localization/conf/shenlan_localization.pb.txt"
+        readers: [
+          {
+            channel: "/apollo/sensor/gnss/imu"
+            qos_profile: {
+              depth : 10
+            }
+            pending_queue_size: 50
+          }
+        ]
+      }
+    }
+    timer_components {
+      class_name : "MatchingComponent"
+      config {
+        name : "shenlan_matching"
+        flag_file_path : "/apollo/modules/localization/conf/localization.conf"
+        config_file_path : "/apollo/modules/localization/conf/shenlan_localization.pb.txt"
+        interval : 10
+      }
+    }
+
+    timer_components {
+      class_name : "SlidingWindowComponent"
+      config {
+        name : "shenlan_sliding_window"
+        flag_file_path : "/apollo/modules/localization/conf/localization.conf"
+        config_file_path : "/apollo/modules/localization/conf/shenlan_localization.pb.txt"
+        interval : 10
+      }
+    }
+}
+

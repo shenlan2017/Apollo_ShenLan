@@ -25,4 +25,5 @@ message Config {
   optional string lidar_pose_topic = 20;
   optional string odometry_gnss_topic = 21;
   optional string loop_closing_topic = 22;
+  optional string map_matcher_topic = 23;
 }

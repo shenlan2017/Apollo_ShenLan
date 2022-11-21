@@ -4,7 +4,7 @@ data_path: ./   # 数据存放路径
 global_map_filter: voxel_filter # 选择全局地图点云滤波方法，目前支持：voxel_filter
 
 # 局部地图
-local_frame_num: 15
+local_frame_num: 20
 local_map_filter: voxel_filter # 选择滑窗小地图点云滤波方法，目前支持：voxel_filter
 
 # 当前帧

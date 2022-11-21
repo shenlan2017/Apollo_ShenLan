@@ -13,6 +13,8 @@ cc_library(
         "loop_closing.cc",
         "msg_transfer.cc",
         "filtering.cc",
+        "matching.cc",
+        "sliding_window.cc",
     ],
     hdrs = [
         "front_end.h",
@@ -20,7 +22,9 @@ cc_library(
         "post_processing.h",
         "loop_closing.h",
         "msg_transfer.h",
-        "filtering.h"
+        "filtering.h",
+        "matching.h",
+        "sliding_window.h",
     ],
     deps = [
         "@boost",
@@ -65,7 +69,5 @@ cc_library(
         "//modules/common/util:time_util",
     ],
 )
-
-
 
 cpplint()
