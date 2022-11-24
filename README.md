@@ -42,8 +42,20 @@
 - 第三方库：
 
   - 添加速腾`RS-Helios`32线激光雷达驱动，引入至thirdparty
+
   - 添加G2O, ceres , Sophus 等SHENLAN 多传感器融合定位所依赖的第三方库
+
   - 文件目录：`/Apollo_ShenLan/third_party `，` /Apollo_ShenLan/rs_driver`
+
+  - 更改pcl库版本至1.11.0，在第一次进入docker环境后，需进行安装。
+
+    ```bash
+    bash docker/scripts/dev_start.sh #拉取镜像
+    bash docker/scripts/dev_into.sh#第一次进入docker环境后，执行以下指令安装相关库
+    bash supplement/update_docker.sh  
+    bash docker/build/installers/install_pcl.sh
+    bash apollo.sh build_opt #编译apollo
+    ```
 
 - 定位  
 
@@ -60,7 +72,6 @@
   - 障碍物剔除：增加利用感知单元的障碍物检测算法（CnnSegmetation、PointPillar）对建图过程的障碍物进行剔除
   - 文件目录：`/Apollo_ShenLan/modules/perception`
 
-  
 
 > 对于ShenLan Apollo 同 Apollo v6.0_edu版本的具体代码差异，可通过VS Code进行版本的差异化对比
 
