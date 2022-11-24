@@ -15,3 +15,4 @@ is_mapping: true
 lidar_pose_topic: "/apollo/localization/shenlan_msf_lidar"
 odometry_gnss_topic: "/apollo/localization/shenlan_msf_gnss"
 loop_closing_topic: "/apollo/localization/loop_pose"
+map_matcher_topic: "/apollo/localization/map_matching_pose"

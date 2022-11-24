@@ -2,7 +2,7 @@
 # data storage:
 #
 # a. global map for relative pose estimation using lidar frontend:
-map_path: /media/kris/Workspace/sensor_fusion_new/my_code/src/auto_driving_localization_new/slam_data/map/filtered_map.pcd
+map_path: /media/kris/Workspace/sensor_fusion_new/my_code/src/lidar_localization/slam_data/map/filtered_map.pcd
 # b. scan context index for map matching:
 scan_context_path: /media/kris/Workspace/shenlan_sensor_fusion/section_10/my_code/src/lidar_localization/slam_data/scan_context
 

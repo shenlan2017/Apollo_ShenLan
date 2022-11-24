@@ -19,9 +19,9 @@ sliding_window_size: 20 # 20
 
 #
 # select measurements:
-#
+# 
 measurements:
-    map_matching: false
+    map_matching: true
     imu_pre_integration: true
 
 #
@@ -33,7 +33,7 @@ lidar_odometry:
 
 
 map_matching:
-    noise: [1.0, 1.0, 4.0, 0.01, 0.01, 0.01] # x y z yaw roll pitch 1.0 0.01
+    noise: [1e-4, 1e-4, 1e-4, 1e-4, 1e-4, 1e-4] # x y z yaw roll pitch 1.0 0.01
 
 gnss_position:
     noise: [1.0, 1.0, 4.0] # x y z
@@ -46,6 +46,6 @@ imu_pre_integration:
         measurement:
             accel: 0.25 # 2.5e-3
             gyro: 0.1 # 1.0e-4
-        random_walk:
+        random_walk: 
             accel: 1.0e-6 # 1.0e-3
             gyro: 1.0e-6 # 1.0e-3

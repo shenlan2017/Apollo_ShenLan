@@ -4,7 +4,6 @@
 
 基于深蓝[多传感器融合定位](https://www.shenlanxueyuan.com/course/558)课程配套代码，优化了激光雷达+GNSS+IMU+轮速计的融合模式，将其代码移植至百度Apollo([v6.0_edu](https://github.com/ApolloAuto/apollo/tree/v6.0_edu))自动驾驶系统中，在车端完成融合定位算法的验证，同感知、规控等单元共同实现车端的自动驾驶功能。课程以线上仿真＋线下实车测试的方式进行，旨在帮助同学理论结合实践，在实际环境中对各匹配及融合算法进行测试，了解各算法优劣，并针对部分退化场景利用多传感器融合的方式保证车端定位结果的可靠性。
 
-- 实车Apollo代码： https://github.com/shenlan2017/Apollo_ShenLan 
 - LGSVL仿真器下载地址： https://github.com/shenlan2017/ShenLanSVL
 - Apollo&LGSVL联合仿真： https://www.shenlanxueyuan.com/course/563
 

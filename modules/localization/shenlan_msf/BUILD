@@ -22,6 +22,8 @@ cc_binary(
     deps = [
         ":shenlan_msf_filtering_component",
         ":shenlan_msf_pretreat_component",
+        ":shenlan_msf_optimization_matching_component",
+        ":shenlan_msf_optimization_sliding_window_component",
     ],
 )
 
@@ -145,6 +147,35 @@ cc_library(
     ],
     hdrs = [
         "localization/shenlan_pretreat_component.h",
+    ],
+    copts = [
+        "-DMODULE_NAME=\\\"localization\\\"",
+    ],
+    deps = COMMON_DEPS,
+)
+
+
+cc_library(
+    name = "shenlan_msf_optimization_matching_component",
+    srcs = [
+        "localization/shenlan_optimization_matching_component.cc",
+    ],
+    hdrs = [
+        "localization/shenlan_optimization_matching_component.h",
+    ],
+    copts = [
+        "-DMODULE_NAME=\\\"localization\\\"",
+    ],
+    deps = COMMON_DEPS,
+)
+
+cc_library(
+    name = "shenlan_msf_optimization_sliding_window_component",
+    srcs = [
+        "localization/shenlan_optimization_sliding_window_component.cc",
+    ],
+    hdrs = [
+        "localization/shenlan_optimization_sliding_window_component.h",
     ],
     copts = [
         "-DMODULE_NAME=\\\"localization\\\"",
