@@ -74,12 +74,12 @@ class NormalDistributionsTransform {
  protected:
   /**@brief Typename of source point. */
   typedef typename pcl::PointCloud<PointSource> PointCloudSource;
-  typedef typename boost::shared_ptr<PointCloudSource> PointCloudSourcePtr;
-  typedef boost::shared_ptr<const PointCloudSource> PointCloudSourceConstPtr;
+  typedef typename std::shared_ptr<PointCloudSource> PointCloudSourcePtr;
+  typedef std::shared_ptr<const PointCloudSource> PointCloudSourceConstPtr;
 
   /**@brief Typename of target point. */
   typedef typename pcl::PointCloud<PointTarget> PointCloudTarget;
-  typedef boost::shared_ptr<const PointCloudTarget> PointCloudTargetConstPtr;
+  typedef std::shared_ptr<const PointCloudTarget> PointCloudTargetConstPtr;
 
   /**@brief Typename of searchable voxel grid containing mean and covariance. */
   typedef VoxelGridCovariance<PointTarget> TargetGrid;
@@ -93,10 +93,10 @@ class NormalDistributionsTransform {
 
  public:
   /**@brief Typedef shared pointer. */
-  typedef boost::shared_ptr<
+  typedef std::shared_ptr<
       NormalDistributionsTransform<PointSource, PointTarget>>
       Ptr;
-  typedef boost::shared_ptr<
+  typedef std::shared_ptr<
       const NormalDistributionsTransform<PointSource, PointTarget>>
       ConstPtr;
 

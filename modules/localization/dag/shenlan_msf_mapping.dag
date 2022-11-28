@@ -35,3 +35,20 @@ module_config {
     }
 
 }
+# Define all coms in DAG streaming.
+module_config {
+    module_library : "/apollo/bazel-bin/modules/localization/shenlan_msf/visualization/pangolin_visualizer_compenont.so"
+
+    components {
+      class_name : "PangolinVisualizerComponent"
+      config {
+        name : "msf_visualizer"
+        config_file_path : "/apollo/modules/localization/conf/shenlan_localization.pb.txt"
+        readers: [
+          {
+            channel: "/apollo/sensor/lidar/PointCloud2"
+          }
+        ]
+      }
+    }
+}

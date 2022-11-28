@@ -52,8 +52,8 @@ bool BoxFilter::Filter(const CloudData::CloudTypePtr& input_cloud_ptr,
   bb_filter.setHullCloud(surface_hull);
   bb_filter.filter(filter_indices);
 
-  boost::shared_ptr<std::vector<int>> index_ptr =
-      boost::make_shared<std::vector<int>>(filter_indices);
+  std::shared_ptr<std::vector<int>> index_ptr =
+      std::make_shared<std::vector<int>>(filter_indices);
 
   pcl::ExtractIndices<CloudData::PointType> extract;
   extract.setInputCloud(input_cloud_ptr);

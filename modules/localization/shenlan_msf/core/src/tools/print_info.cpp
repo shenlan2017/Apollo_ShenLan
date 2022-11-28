@@ -6,6 +6,7 @@
  * @LastEditTime: 2022-09-22 10:48:12
  */
 #include "lidar_localization/tools/print_info.h"
+#include <iostream>
 
 namespace lidar_localization {
 void PrintInfo::PrintPose(const std::string head, const Eigen::Matrix4f pose) {
