@@ -321,8 +321,8 @@ class OfflineLidarObstaclePerception {
       bb_filter.filter(filter_indices);
       }
     }
-    boost::shared_ptr<std::vector<int>> index_ptr =
-        boost::make_shared<std::vector<int>>(filter_indices);
+    std::shared_ptr<std::vector<int>> index_ptr =
+        std::make_shared<std::vector<int>>(filter_indices);
     if(ii !=0 && index_ptr->size() >0){
         pcl::PointCloud<pcl::PointXYZI>::Ptr filtered_cloud(
         new pcl::PointCloud<pcl::PointXYZI>);
