@@ -283,8 +283,8 @@ class OfflineLidarObstaclePerception {
     pcl::PointCloud<pcl::PointXYZI>::Ptr filtered_cloud(
         new pcl::PointCloud<pcl::PointXYZI>);
 
-    boost::shared_ptr<std::vector<int>> index_ptr =
-        boost::make_shared<std::vector<int>>(filter_indices);
+    std::shared_ptr<std::vector<int>> index_ptr =
+        std::make_shared<std::vector<int>>(filter_indices);
 
     pcl::ExtractIndices<pcl::PointXYZI> extract;
     extract.setInputCloud(cloud);

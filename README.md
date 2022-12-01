@@ -52,11 +52,10 @@
     ```bash
     bash docker/scripts/dev_start.sh #拉取镜像
     bash docker/scripts/dev_into.sh#第一次进入docker环境后，执行以下指令安装相关库
-    bash supplement/update_docker.sh  
-    bash docker/build/installers/install_pcl.sh
+    bash supplement/update_docker.sh
     bash apollo.sh build_opt #编译apollo
     ```
-
+  
 - 定位  
 
   - NDT定位模块
