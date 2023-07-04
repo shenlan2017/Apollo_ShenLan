@@ -1,4 +1,5 @@
 #! /bin/bash
+set -e #错误即退出
 
 BAG_PATH=${PWD}/$1
 
@@ -18,7 +19,7 @@ bash scripts/lidar_parse.sh \
 ${BAG_PATH} \
 ${BAG_PATH} \
 /apollo/modules/calibration/data/dev_kit_pix_hooke/lidar_params/lidar_novatel_extrinsics.yaml \
-lidar16
+lidar
 test -s ${BAG_PATH}/parsed_data/00000/pcd/1.pcd \
     && echo "成功解析雷达数据！" || (echo "解析雷达数据失败，请检查。" && exit)
 

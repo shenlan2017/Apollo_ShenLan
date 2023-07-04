@@ -82,8 +82,8 @@ function create_lossy_map() {
     --srcdir $OUT_MAP_FOLDER/lossless_map \
     --dstdir $OUT_MAP_FOLDER
 
-  #rm -fr $OUT_MAP_FOLDER/lossless_map
-  #rm -fr $OUT_MAP_FOLDER/parsed_data
+  rm -fr $OUT_MAP_FOLDER/lossless_map
+  rm -fr $OUT_MAP_FOLDER/parsed_data
   mv $OUT_MAP_FOLDER/lossy_map $OUT_MAP_FOLDER/local_map
 }
 
@@ -102,6 +102,13 @@ for item in $(ls -l *.record* | awk '{print $9}'); do
   create_ndt_map  "${DIR_NAME}/pcd" "${DIR_NAME}/pcd/corrected_poses.txt"
 done
 
-# create_lossy_map
+echo "adjust map file directory"
+mkdir -p $OUT_MAP_FOLDER/local_map
+
+mv $OUT_MAP_FOLDER/map \
+$OUT_MAP_FOLDER/local_map/map
+
+mv $OUT_MAP_FOLDER/config.xml \
+$OUT_MAP_FOLDER/local_map/config.xml
 
 echo "Done."

@@ -1,4 +1,5 @@
 #! /bin/bash
+set -e #错误即退出
 
 BAG_PATH=$1
 
@@ -21,6 +22,8 @@ catkin_make -j8
 source devel/setup.bash
 roslaunch floam floam_velodyne.launch pcd_path:=${CURRENT_DIR}/${BAG_PATH}/parsed_data/00000/pcd
 
+echo "Please enter Ctrl-C!"
+
 # 数据对齐
 cd ~/calibration/lidar2ins_non_ros_ws/pose_align/
 if [ ! -d "/home/t/calibration/lidar2ins_non_ros_ws/pose_align/build/" ]; then
@@ -33,8 +36,10 @@ make -j4
 mv lidar_novatel_extrinsics.yaml \
    ${CURRENT_DIR}/modules/calibration/data/dev_kit_pix_hooke/lidar_params/lidar_novatel_extrinsics.yaml
 
+echo "Please Press the Frok(Cross) to end."
+
 # 执行可视化
-sudo apt-get install -y \
+sudo apt-get install -y -q\
     xterm \
     libglm-dev \
     libglfw3-dev \

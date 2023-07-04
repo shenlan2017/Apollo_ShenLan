@@ -1,0 +1,8 @@
+header {
+  version: "0326"
+  date: "20220326"
+  projection {
+    proj: "+proj=tmerc +lat_0={39.52} +lon_0={116.28} +k={-48.9} +ellps=WGS84 +no_defs"
+  }
+}
+

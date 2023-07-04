@@ -73,8 +73,8 @@ function create_lossy_map() {
     --srcdir $OUT_MAP_FOLDER/lossless_map \
     --dstdir $OUT_MAP_FOLDER
 
-  # rm -fr $OUT_MAP_FOLDER/lossless_map
-  # rm -fr $OUT_MAP_FOLDER/parsed_data
+  rm -fr $OUT_MAP_FOLDER/lossless_map
+  rm -fr $OUT_MAP_FOLDER/parsed_data
   mv $OUT_MAP_FOLDER/lossy_map $OUT_MAP_FOLDER/local_map
 }
 

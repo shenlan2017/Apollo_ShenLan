@@ -5,8 +5,8 @@ sudo apt update
 
 function apt_get_update_and_install() {
     # --fix-missing
-    apt-get -y update && \
-        apt-get -y install --no-install-recommends "$@"
+    sudo apt-get -y update && \
+        sudo apt-get -y install --no-install-recommends "$@"
 }
 
 sudo apt-get install tcl-dev tk-dev python3-tk libeigen3-dev -y
@@ -27,6 +27,7 @@ apt_get_update_and_install \
     libfreetype6-dev \
     libpcap-dev \
     libqhull-dev
+    
 apt_get_update_and_install \
     libusb-1.0-0 \
     libopenni0 \
@@ -50,4 +51,6 @@ fi
 sudo rm -rf /opt/apollo/sysroot/include/pcl-1.10
 cd /apollo
 cp /apollo/supplement/BUILD.tpl /apollo/third_party/pcl/
+
+sudo ldconfig
 
