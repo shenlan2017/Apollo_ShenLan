@@ -66,7 +66,7 @@
 # query Cyber TF buffer size in second.
 # type: double
 # default: 0.01
---obs_tf2_buff_size=0.1
+--obs_tf2_buff_size=0.01
 
 # enabled state of local pose extrapolation when failed to query pose
 # type: bool
@@ -87,4 +87,4 @@
 --start_visualizer=false
 --lidar_model_version=velodyne16
 
---lidar_sensor_name=lidar
+--lidar_sensor_name=lidar16
