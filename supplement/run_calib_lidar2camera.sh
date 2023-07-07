@@ -20,7 +20,7 @@ if [ ! -d "/home/t/calibration/camera2lidar_ws/project/" ]; then
     mkdir -p /home/t/calibration/camera2lidar_ws/project
 fi
 cp ${BAG_PATH}/parsed_data/00000/pcd/1.pcd /home/t/calibration/camera2lidar_ws/project/
-image_file=$(find data/bag/1/bag_camera_6mm_front -maxdepth 1 -type f -name "*.jpeg" -print -quit)
+image_file=$(find $1/bag_camera_6mm_front -maxdepth 1 -type f -name "*.jpeg" -print -quit)
 mv ${image_file} /home/t/calibration/camera2lidar_ws/project/1.jpeg
 cp modules/calibration/data/dev_kit_pix_hooke/camera_params/front_6mm_extrinsics.yaml \
     /home/t/calibration/camera2lidar_ws/project
