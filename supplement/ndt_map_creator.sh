@@ -27,8 +27,8 @@ OUT_MAP_FOLDER=$4
 LIDAR_TYPE=${5:-lidar16}
 
 PARSED_DATA_FOLDER="$OUT_MAP_FOLDER/parsed_data"
-CLOUD_TOPIC="/apollo/sensor/$LIDAR_TYPE/compensator/PointCloud2"
-# CLOUD_TOPIC="/apollo/sensor/$LIDAR_TYPE/PointCloud2"
+# CLOUD_TOPIC="/apollo/sensor/$LIDAR_TYPE/compensator/PointCloud2"
+CLOUD_TOPIC="/apollo/sensor/$LIDAR_TYPE/PointCloud2"
 
 function data_exporter() {
   local BAG_FILE=$1

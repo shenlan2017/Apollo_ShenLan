@@ -1,4 +1,8 @@
 #! /bin/bash
+if [ $# -lt 1 ]; then
+  echo "Usage: example_build_all_map.sh [records folder]"
+  exit 1
+fi
 
 BAG_PATH=$1
 
@@ -28,13 +32,13 @@ cp modules/calibration/data/dev_kit_pix_hooke/camera_params/front_6mm_intrinsics
     /home/t/calibration/camera2lidar_ws/project
 
 # 执行标定任务
-cd /home/t/calibration/camera2lidar_ws/project
+cd /home/t/calibration/camera2lidar_ws/
 if [ ! -d "/home/t/calibration/camera2lidar_ws/build/" ]; then
     mkdir build && cd build
 fi
 cmake ..
 make -j4
-cd ../bin/
+cd /home/t/calibration/camera2lidar_ws/bin/
 ./run_lidar2camera \
 ../project/1.jpeg \
 ../project/1.pcd \
