@@ -52,6 +52,23 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "fix_lib_localization_test",
+    srcs = [
+        "fix_localization.cpp",
+    ],
+    hdrs = glob(["*.hpp"]),
+    deps = [
+        "//modules/example/proto:times_utils_cc_proto",
+        "//cyber",
+        "//cyber/time:clock",
+        "//modules/localization/proto:localization_cc_proto",
+        "//modules/transform:transform_broadcaster",
+        "@com_google_googletest//:gtest",
+    ],
+)
+
+
 
 
 cc_binary(
@@ -77,5 +94,12 @@ cc_binary(
     linkstatic = 0,
     deps = [":example_lib_proto_test"],
 )
+
+cc_binary(
+    name = "fix_localization",
+    linkstatic = 0,
+    deps = [":fix_lib_localization_test"],
+)
+
 
 cpplint()

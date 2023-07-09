@@ -34,8 +34,9 @@ cp modules/calibration/data/dev_kit_pix_hooke/camera_params/front_6mm_intrinsics
 # 执行标定任务
 cd /home/t/calibration/camera2lidar_ws/
 if [ ! -d "/home/t/calibration/camera2lidar_ws/build/" ]; then
-    mkdir build && cd build
+    mkdir build
 fi
+cd build
 cmake ..
 make -j4
 cd /home/t/calibration/camera2lidar_ws/bin/
