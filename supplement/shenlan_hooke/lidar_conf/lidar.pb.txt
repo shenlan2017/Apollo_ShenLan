@@ -1,4 +1,5 @@
-model: "RSHELIOS"
+model: "RS16"
+# model: "RSHELIOS"
 frame_id: "lidar"
 ip: "192.168.1.200"
 msop_port: 6699

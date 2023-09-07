@@ -63,8 +63,8 @@ docker/build/archive/
 *_pb2.py
 
 # calibration files
-# modules/calibration/data/
-# /output
+modules/calibration/data/
+/output
 
 # Data bag
 docs/demo_guide/*.bag

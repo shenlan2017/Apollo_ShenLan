@@ -33,9 +33,9 @@ lat_controller_conf {
   preview_window: 0
   cf: 155493.663
   cr: 155493.663
-  mass_fl: 100
+  mass_fl: 120
   mass_fr: 120
-  mass_rl: 100
+  mass_rl: 120
   mass_rr: 120
   eps: 0.01
   matrix_q: 0.5
