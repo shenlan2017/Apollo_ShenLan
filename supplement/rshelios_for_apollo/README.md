@@ -1,7 +1,5 @@
 put lidar/ into apollo/modules/drivers/
 
-put rs_driver/ into apollo/
-
 put third_party/ into apollo/third_party
 
 add line in apollo/tools/workspace.bzl/ & function initialize_third_party()

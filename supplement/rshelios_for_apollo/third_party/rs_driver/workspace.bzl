@@ -9,5 +9,5 @@ def repo():
     native.new_local_repository(
         name = "rs_driver",
         build_file = clean_dep("//third_party/rs_driver:rs_driver.BUILD"),
-        path = "/apollo/rs_driver/src/",
+        path = "/apollo/third_party/rs_driver/rs_driver/src/",
     )

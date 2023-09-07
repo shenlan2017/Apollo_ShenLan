@@ -1,0 +1,51 @@
+vehicle_param {
+  brand: DKIT
+  vehicle_id {
+      other_unique_id: "pix"
+  }
+  front_edge_to_center: 2.17
+  back_edge_to_center: 0.30
+  left_edge_to_center: 0.825
+  right_edge_to_center: 0.825
+
+  length: 2.5
+  width: 1.7
+  height:1.7
+  min_turn_radius: 3.0
+  max_acceleration: 2.5
+  max_deceleration: -6
+  max_steer_angle: 8.7265
+  max_steer_angle_rate: 0.6108
+  min_steer_angle_rate:0
+  steer_ratio: 12.003
+  wheel_base: 1.9
+  wheel_rolling_radius: 0.30
+  max_abs_speed_when_stopped: 0.1
+
+  brake_deadzone: 0.1
+  throttle_deadzone: 0.1
+
+  steering_latency_param
+  {
+      dead_time: 0.0
+      rise_time: 0.0
+      peak_time: 0.0
+      settling_time: 0.0
+  }
+
+  throttle_latency_param
+  {
+      dead_time: 0.0
+      rise_time: 0.0
+      peak_time: 0.0
+      settling_time: 0.0
+  }
+
+  brake_latency_param
+  {
+      dead_time: 0.0
+      rise_time: 0.0
+      peak_time: 0.0
+      settling_time: 0.0
+  }
+}
