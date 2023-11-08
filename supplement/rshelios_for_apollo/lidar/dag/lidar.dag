@@ -3,8 +3,8 @@ module_config {
     components {
         class_name : "RobosenseComponent"
         config {
-          name : "RS16_Driver"
-          config_file_path : "/apollo/modules/drivers/lidar/conf/rshelios.pb.txt"
+          name : "lidar_driver"
+          config_file_path : "/apollo/modules/drivers/lidar/conf/lidar.pb.txt"
         }
     }
 }
@@ -14,9 +14,9 @@ module_config {
     components {
       class_name : "CompensatorComponent"
       config {
-        name : "RS16_Compensator"
-        config_file_path : "/apollo/modules/drivers/lidar/conf/rshelios_compensator.pb.txt"
-        readers {channel: "/apollo/sensor/lidar16/PointCloud2"}
+        name : "lidar_compensator"
+        config_file_path : "/apollo/modules/drivers/lidar/conf/lidar_compensator.pb.txt"
+        readers {channel: "/apollo/sensor/lidar/PointCloud2"}
       }
     }
 }

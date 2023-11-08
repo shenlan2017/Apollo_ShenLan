@@ -1,7 +1,7 @@
 brand: ROBOSENSE
 velodyne {
   frame_id: "velodyne128"
-  scan_channel: "/apollo/sensor/lidar16/Scan"
+  scan_channel: "/apollo/sensor/lidar32/Scan"
   rpm: 600
   model: VLP16
   prefix_angle: 18000
@@ -13,7 +13,7 @@ velodyne {
   calibration_online: false
   calibration_file: "/apollo/modules/drivers/lidar/velodyne/params/VLP16_calibration.yaml"
   organized: false
-  convert_channel_name: "/apollo/sensor/lidar16/PointCloud2"
+  convert_channel_name: "/apollo/sensor/lidar32/PointCloud2"
   mode: STRONGEST
   use_gps_time: true
   use_poll_sync: true

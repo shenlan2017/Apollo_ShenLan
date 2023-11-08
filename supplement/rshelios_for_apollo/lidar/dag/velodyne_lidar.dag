@@ -19,7 +19,7 @@ module_config {
       config {
         name : "velodyne_convert"
         config_file_path : "/apollo/modules/drivers/lidar/velodyne/conf/velodyne16_front_center_conf.pb.txt"
-        readers {channel: "/apollo/sensor/lidar16/Scan"}
+        readers {channel: "/apollo/sensor/lidar32/Scan"}
       }
     }
 }
@@ -32,7 +32,7 @@ module_config {
       config {
         name : "velodyne_compensator"
         config_file_path : "/apollo/modules/drivers/lidar/velodyne/conf/velodyne16_fusion_compensator.pb.txt"
-        readers {channel: "/apollo/sensor/lidar16/PointCloud2"}
+        readers {channel: "/apollo/sensor/lidar32/PointCloud2"}
       }
     }
 }

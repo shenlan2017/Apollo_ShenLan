@@ -115,7 +115,7 @@ void copyPC(std::shared_ptr<PointCloudMsg> rs_pc,
     point->set_y(iter.y);
     point->set_z(iter.z);
     point->set_intensity(iter.intensity);
-    point->set_timestamp(iter.timestamp);
+    point->set_timestamp(iter.timestamp * 1e9);
   }
 }
 
@@ -127,7 +127,7 @@ void RobosenseDriver::split_frame(uint16_t height, double ts) {
   preparePointsMsg(raw_cloud);
   if (conf_.use_lidar_clock()) {
     const auto timestamp = ts;
-    raw_cloud->set_measurement_time(static_cast<double>(timestamp) / 1e9);
+    raw_cloud->set_measurement_time(static_cast<double>(timestamp));
     raw_cloud->mutable_header()->set_lidar_timestamp(timestamp);
   }
 
@@ -252,7 +252,7 @@ void RobosenseDriver::preparePointsMsg(std::shared_ptr<PointCloud> msg) {
   msg->mutable_header()->set_sequence_num(++points_seq_);
   msg->mutable_header()->set_frame_id(conf_.frame_id());
   msg->mutable_header()->set_timestamp_sec(cyber::Time().Now().ToSecond());
-  long kSecondToNanoFactor = 1;  // this parameter is wrong.
+  long kSecondToNanoFactor = 1e9f;  // this parameter is wrong.
   msg->mutable_header()->set_lidar_timestamp(cyber::Time().Now().ToSecond() *
                                              kSecondToNanoFactor);
   const auto timestamp =
